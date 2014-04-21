@@ -6,7 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
+import com.emerald.containers.Playlist;
 import com.emerald.containers.Song;
 
 import android.content.Context;
@@ -14,6 +14,40 @@ import android.util.Log;
 
 public class Utilities {
 
+	public void savePlaylistToStorage(Context c, Playlist p, String playlistName) {
+		try {
+			FileOutputStream fos;
+			fos = c.openFileOutput(playlistName, Context.MODE_PRIVATE);
+			ObjectOutputStream of = new ObjectOutputStream(fos);
+			of.writeObject(p.getPlaylist());
+			of.flush();
+			of.close();
+			fos.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	/*
+	public List<Song> readPlaylistFromStorage(Context c, String playlistName) {
+		List<Song> playlist = new ArrayList<Song>();
+		FileInputStream fis;
+		try {
+			fis = c.openFileInput("lastSong");
+			ObjectInputStream oi = new ObjectInputStream(fis);
+			playlist = (List<Song>) oi.readObject();
+			oi.close();
+		} catch (FileNotFoundException e) {
+			Log.e("InternalStorage", e.getMessage());
+		} catch (IOException e) {
+			Log.e("InternalStorage", e.getMessage()); 
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return playlist;	
+	}
+	*/
 	public void saveToInternalStorage(Context c, Song song) {
 		try {
 			FileOutputStream fos;
@@ -80,6 +114,26 @@ public class Utilities {
 		return finalTimerString;
 	}
 
+	public String milliSecondsToClock(long milliseconds) {
+		String finalTimerString = "";
+		String secondsString = "";
+
+		// Convert total duration into time
+		int hours = (int)( milliseconds / (1000*60*60));
+		int minutes = (int)(milliseconds % (1000*60*60)) / (1000*60);
+		int seconds = (int) ((milliseconds % (1000*60*60)) % (1000*60) / 1000);
+		// Add hours if there
+		if (hours > 0){
+			finalTimerString = hours + ":";
+		}
+		if(seconds < 10 && seconds > 0){
+			secondsString = "0" + seconds;
+		} 
+		else{
+			secondsString = "" + seconds;
+		}
+		return finalTimerString + minutes + ":" + secondsString;
+	}
 	/**
 	 * Function to get Progress percentage
 	 * @param currentDuration

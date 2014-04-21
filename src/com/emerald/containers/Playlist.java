@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Playlist {
 	private List<Song>	playlist;
-	private int					index;
+	private int			index;
 	
 	public Playlist(List<Song> playlist, int index) {
 		super();

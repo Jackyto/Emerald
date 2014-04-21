@@ -7,6 +7,7 @@
     <string name="title_albums">Albums</string>
     <string name="title_songs">Songs</string>
     <string name="album_art">Album art</string>
+    <string name="title_playlist">Playlists</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>

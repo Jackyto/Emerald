@@ -1,8 +1,10 @@
 package com.emerald;
 
+import com.emerald.containers.Song;
 import com.emerald.fragments.AlbumFragment;
 import com.emerald.fragments.ArtistFragment;
 import com.emerald.fragments.HomeFragment;
+import com.emerald.fragments.PlaylistFragment;
 import com.emerald.fragments.SongFragment;
 
 import android.app.Activity;
@@ -42,6 +44,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 	private static MusicService	mService;
 
 	private static boolean		fromDrawer = false;
+	private static boolean		fullAlbum = false;
 	private static int			fragmentIndex = 0;
 
 	private ImageButton			playButton, nextButton, prevButton;
@@ -54,11 +57,14 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		utils = new Utilities();
-
 		setManager(new MusicManager(getApplicationContext()));
-		MusicManager.setCurrentSong(utils.readFromInternalStorage(getApplicationContext()));
-
+		
+		Song lastSong = MusicManager.getUtils().readFromInternalStorage(getApplicationContext());
+		if (lastSong != null) {
+			MusicManager.setCurrentSong(lastSong);
+			MusicManager.setCurrentAlbum(MusicManager.getAlbumFromSong(lastSong));
+		}
+		
 		mNavigationDrawerFragment = (NavigationDrawerFragment)
 				getFragmentManager().findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
@@ -70,7 +76,6 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 		mNavigationDrawerFragment.setUp(
 				R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
-
 
 		playButton = (ImageButton) findViewById(R.id.playButton);
 		nextButton = (ImageButton) findViewById(R.id.nextButton);
@@ -124,9 +129,9 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 
 		mService.next();
 		songLabel.setText(MusicManager.getCurrentSong().getTitle() + " by " + MusicManager.getCurrentSong().getArtist());
-		
+
 		refreshPlayer();
-		
+
 		if (MusicService.isPlaying())
 			playButton.setImageResource(android.R.drawable.ic_media_pause);
 		else
@@ -144,14 +149,14 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 
 		mService.prev();
 		songLabel.setText(MusicManager.getCurrentSong().getTitle() + " by " + MusicManager.getCurrentSong().getArtist());
-		
+
 		refreshPlayer();
-		
+
 		if (MusicService.isPlaying())
 			playButton.setImageResource(android.R.drawable.ic_media_pause);
 		else
 			playButton.setImageResource(android.R.drawable.ic_media_play);
-		
+
 		mService.getPlayer().setOnCompletionListener(this);
 	}
 
@@ -184,7 +189,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 		mService.setPlayer(mp);
 		next();
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
@@ -214,7 +219,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 				Uri songUri = Uri.parse(MusicManager.getCurrentSong().getPath());
 				getmService().setPlayer(MediaPlayer.create(getApplicationContext(), songUri));
 				mService.getPlayer().setOnCompletionListener(new OnCompletionListener() {
-					
+
 					@Override
 					public void onCompletion(MediaPlayer mp) {
 						// TODO Auto-generated method stub
@@ -267,6 +272,12 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 			.replace(R.id.container, SongFragment.newInstance())
 			.commit();
 			break;
+		case 4:
+			mTitle = getString(R.string.title_playlist);
+			fragmentManager.beginTransaction()
+			.replace(R.id.container, PlaylistFragment.newInstance())
+			.commit();
+			break;
 		}
 		getActionBar().setTitle(mTitle);
 	}
@@ -283,8 +294,9 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 		// TODO Auto-generated method stub
 		fragmentIndex--;
 		if (fragmentIndex < 0)
-			this.onStop();
-		changeView(fragmentIndex);
+			super.onBackPressed();
+		else
+			changeView(fragmentIndex);
 	}
 
 	public void restoreActionBar() {
@@ -350,6 +362,14 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 
 	public static void setFragmentIndex(int fragmentIndex) {
 		MainActivity.fragmentIndex = fragmentIndex;
+	}
+
+	public static boolean isFullAlbum() {
+		return fullAlbum;
+	}
+
+	public static void setFullAlbum(boolean fullAlbum) {
+		MainActivity.fullAlbum = fullAlbum;
 	}
 
 }

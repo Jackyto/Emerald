@@ -37,11 +37,14 @@ public class MusicManager implements Serializable{
 
 	private static Playlist		playlist;
 	
+	private static Utilities	utils;
+	
 	static int 						i;
 	
 	public MusicManager(Context context) {
 		super();
 		MusicManager.context = context;
+		setUtils(new Utilities());
 		
 		setArtistList(new ArrayList<Artist>());
 		setAlbumList(new ArrayList<Album>());
@@ -174,6 +177,16 @@ public class MusicManager implements Serializable{
 				return i;
 		return 0;
 	}
+
+	public List<Song>  	getSongListFromArtist(Artist artist) {
+		List<Song>		songListArtist = new ArrayList<Song>();
+		
+		for (i = 0; i < songList.size(); i++) {
+			if (songList.get(i).getArtist().contentEquals(artist.getName()))
+				songListArtist.add(songList.get(i));
+		}
+		return songListArtist;
+	}	
 	
 	public List<Album> getAlbumListFromArtist(Artist artist) {
 		List<Album>		artistAlbumList = new ArrayList<Album>();
@@ -263,5 +276,13 @@ public class MusicManager implements Serializable{
 
 	public static void setPlaylist(Playlist playlist) {
 		MusicManager.playlist = playlist;
+	}
+
+	public static Utilities getUtils() {
+		return utils;
+	}
+
+	public static void setUtils(Utilities utils) {
+		MusicManager.utils = utils;
 	}
 }

@@ -7,9 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.emerald.MusicManager;
 import com.emerald.R;
+import com.emerald.Utilities;
 
 public class SongListAdapter extends ArrayAdapter<Song> {
 	Context c;
@@ -36,13 +39,25 @@ public class SongListAdapter extends ArrayAdapter<Song> {
 		Song p = getItem(position);
 
 		if (p != null) {
-
+			Utilities utils = new Utilities(); 
+			
+			ImageView	iv = (ImageView) v.findViewById(R.id.songArt);
+			
+			if (MusicManager.getAlbumFromSong(p).getArt() != null)
+			iv.setImageBitmap(MusicManager.getAlbumFromSong(p).getArt());
+			
 			TextView tt = (TextView) v.findViewById(R.id.songLabel);
-
-			if (tt != null) {
+			TextView tt1 = (TextView) v.findViewById(R.id.songDuration);
+			TextView tt2 = (TextView) v.findViewById(R.id.songArtist);
+			
+			if (tt != null) 
 				tt.setText(p.getTitle());
-			}
+			
+			if (tt1 != null) 
+				tt1.setText(utils.milliSecondsToClock(p.getDuration()));
 
+			if (tt2 != null)
+				tt2.setText(p.getArtist());
 		}
 
 		return v;

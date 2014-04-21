@@ -29,7 +29,7 @@ public class ArtistFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.artist_frag, container, false);
-
+	    
 		ListView listView = (ListView) rootView.findViewById(R.id.artist_list);
 		
 		ArtistListAdapter adapter = new ArtistListAdapter(getActivity().getApplicationContext(), R.layout.artist_row, MainActivity.getManager().getArtistList());
