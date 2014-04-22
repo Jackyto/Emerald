@@ -11,8 +11,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/songArt"
+        android:ellipsize="end"
         android:gravity="center|left"
         android:padding="8dp"
+        android:singleLine="true"
         android:textColor="#000000"
         android:textSize="16sp" />
 
@@ -23,8 +25,10 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_margin="8dp"
-        android:src="@drawable/ic_launcher"
-        android:contentDescription="@string/album_art" />
+        android:background="#000000"
+        android:contentDescription="@string/desc_album_art"
+        android:padding="2dp"
+        android:src="@drawable/ic_launcher" />
 
     <TextView
         android:id="@+id/songArtist"
@@ -33,7 +37,9 @@
         android:layout_alignLeft="@+id/songLabel"
         android:layout_below="@+id/songLabel"
         android:layout_toLeftOf="@+id/songDuration"
+        android:ellipsize="end"
         android:padding="8dp"
+        android:singleLine="true"
         android:textColor="#000000"
         android:textSize="14sp" />
 
@@ -43,8 +49,10 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/songArt"
         android:layout_alignParentRight="true"
+        android:ellipsize="end"
         android:gravity="center"
         android:padding="8dp"
+        android:singleLine="true"
         android:textColor="#000000"
         android:textSize="12sp" />
 

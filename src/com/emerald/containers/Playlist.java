@@ -2,14 +2,17 @@ package com.emerald.containers;
 
 import java.util.List;
 
+
 public class Playlist {
+	private String		name;
 	private List<Song>	playlist;
 	private int			index;
 	
-	public Playlist(List<Song> playlist, int index) {
+	public Playlist(List<Song> playlist, int index, String name) {
 		super();
 		this.playlist = playlist;
 		this.index = index;
+		this.name = name;
 	}
 	public int		getSize() {
 		return playlist.size();
@@ -25,5 +28,11 @@ public class Playlist {
 	}
 	public void setIndex(int index) {
 		this.index = index;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 }

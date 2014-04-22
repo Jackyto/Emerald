@@ -17,11 +17,11 @@ import android.widget.TextView;
 
 public class ExpandableAlbumListAdapter extends BaseExpandableListAdapter {
 
-	private final SparseArray<Group> groups;
+	private final SparseArray<AlbumGroup> groups;
 	public LayoutInflater inflater;
 	public Activity activity;
 
-	public ExpandableAlbumListAdapter(Activity act, SparseArray<Group> groups) {
+	public ExpandableAlbumListAdapter(Activity act, SparseArray<AlbumGroup> groups) {
 		activity = act;
 		this.groups = groups;
 		inflater = act.getLayoutInflater();
@@ -38,7 +38,7 @@ public class ExpandableAlbumListAdapter extends BaseExpandableListAdapter {
 	}
 
 	@Override
-	public View getChildView(int groupPosition, final int childPosition,
+	public View getChildView(final int groupPosition, final int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
 		
 		final Song children = (Song) getChild(groupPosition, childPosition);
@@ -46,7 +46,7 @@ public class ExpandableAlbumListAdapter extends BaseExpandableListAdapter {
 		TextView text, dur = null;
 		
 		if (convertView == null) {
-			convertView = inflater.inflate(R.layout.listrow_details, null);
+			convertView = inflater.inflate(R.layout.song_listrow_details, null);
 		}
 		
 		text = (TextView) convertView.findViewById(R.id.expSongLabel);
@@ -59,14 +59,15 @@ public class ExpandableAlbumListAdapter extends BaseExpandableListAdapter {
 			@Override
 			public void onClick(View v) {
 				if (MainActivity.isFromDrawer())
-					MusicManager.setPlaylist(new Playlist(MainActivity.getManager().getSongList(), childPosition));
+					MusicManager.setCurrentPlaylist(new Playlist(MainActivity.getManager().getSongList(), childPosition, "current"));
 				else if (MusicManager.getCurrentAlbum() != null)
-					MusicManager.setPlaylist(new Playlist(MainActivity.getManager().getSongListFromAlbum(MusicManager.getCurrentAlbum()), childPosition));
+					MusicManager.setCurrentPlaylist(new Playlist(MainActivity.getManager().getSongListFromAlbum(MusicManager.getCurrentAlbum()), childPosition, "current"));
 				else
-					MusicManager.setPlaylist(new Playlist(MainActivity.getManager().getSongListFromArtist(MusicManager.getCurrentArtist()), childPosition));
+					MusicManager.setCurrentPlaylist(new Playlist(MainActivity.getManager().getSongListFromArtist(MusicManager.getCurrentArtist()), childPosition, "current"));
 
 				MainActivity.setFromDrawer(false);
 				MusicManager.setCurrentSong(children);
+				MusicManager.setCurrentAlbum(groups.get(groupPosition).album);
 				((MainActivity) activity).play();
 				((MainActivity) activity).refreshPlayer();
 			}
@@ -107,9 +108,9 @@ public class ExpandableAlbumListAdapter extends BaseExpandableListAdapter {
 	public View getGroupView(int groupPosition, boolean isExpanded,
 			View convertView, ViewGroup parent) {
 
-		convertView = inflater.inflate(R.layout.listrow_group, null);
+		convertView = inflater.inflate(R.layout.song_listrow_group, null);
 
-		Group group = (Group) getGroup(groupPosition);
+		AlbumGroup group = (AlbumGroup) getGroup(groupPosition);
 
 		TextView tv = (TextView) convertView.findViewById(R.id.expAlbumLabel);
 		tv.setText(group.album.getName());

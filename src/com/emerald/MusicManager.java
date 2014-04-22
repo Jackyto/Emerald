@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import android.content.ContentUris;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.util.ArrayMap;
 
 import com.emerald.containers.Album;
 import com.emerald.containers.Artist;
@@ -35,8 +37,9 @@ public class MusicManager implements Serializable{
 	private static List<Album>	albumList;
 	private static List<Song>	songList;
 
-	private static Playlist		playlist;
-	
+	private static Playlist					currentPlaylist;
+	private static Map<String, Playlist>	userPlaylists;
+
 	private static Utilities	utils;
 	
 	static int 						i;
@@ -49,8 +52,9 @@ public class MusicManager implements Serializable{
 		setArtistList(new ArrayList<Artist>());
 		setAlbumList(new ArrayList<Album>());
 		setSongList(new ArrayList<Song>());
+		setUserPlaylists(new ArrayMap<String, Playlist>());
 		
-		setPlaylist(new Playlist(new ArrayList<Song>(), 0));
+		setCurrentPlaylist(new Playlist(new ArrayList<Song>(), 0, "current"));
 		
 		retrieveArtists();
 		retrieveAlbums();
@@ -172,8 +176,8 @@ public class MusicManager implements Serializable{
 	}
 	
 	public int		getSongIndex(Song song) {
-		for (i = 0; i < playlist.getSize(); i++)
-			if (playlist.getPlaylist().get(i).getPath() == song.getPath())
+		for (i = 0; i < currentPlaylist.getSize(); i++)
+			if (currentPlaylist.getPlaylist().get(i).getPath() == song.getPath())
 				return i;
 		return 0;
 	}
@@ -212,13 +216,20 @@ public class MusicManager implements Serializable{
 		
 		for (i = 0; i < songList.size(); i++) 
 			if (songList.get(i).getAlbum().contentEquals(song.getAlbum()))
-				playlist.getPlaylist().add(songList.get(i));
+				currentPlaylist.getPlaylist().add(songList.get(i));
 	}
 	
 	public static Album		getAlbumFromSong(Song song) {		
 		for (i = 0; i < albumList.size(); i++) 
 			if (albumList.get(i).getName().contentEquals(song.getAlbum()))
 				return albumList.get(i);
+		return null;
+	}
+	
+	public static Artist	getArtistFromAlbum(Album album) {
+		for (i = 0; i < artistList.size(); i++)
+			if (artistList.get(i).getName().contentEquals(album.getArtist()))
+				return artistList.get(i);
 		return null;
 	}
 	
@@ -270,16 +281,24 @@ public class MusicManager implements Serializable{
 		MusicManager.currentSong = currentSong;
 	}
 
-	public static Playlist getPlaylist() {
-		return playlist;
+	public static Playlist getCurrentPlaylist() {
+		return currentPlaylist;
 	}
 
-	public static void setPlaylist(Playlist playlist) {
-		MusicManager.playlist = playlist;
+	public static void setCurrentPlaylist(Playlist playlist) {
+		MusicManager.currentPlaylist = playlist;
 	}
 
 	public static Utilities getUtils() {
 		return utils;
+	}
+
+	public static Map<String, Playlist> getUserPlaylists() {
+		return userPlaylists;
+	}
+
+	public static void setUserPlaylists(Map<String, Playlist> userPlaylists) {
+		MusicManager.userPlaylists = userPlaylists;
 	}
 
 	public static void setUtils(Utilities utils) {

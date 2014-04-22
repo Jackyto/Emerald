@@ -15,14 +15,16 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/songLayout"
         android:layout_alignRight="@+id/songLayout"
-        android:layout_below="@+id/songLayout" >
+        android:layout_below="@+id/songLayout"
+        android:background="@color/light_text"
+        android:padding="8dp" >
 
         <TextView
             android:id="@+id/startTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            android:text="0 min 0 sec" />
+            android:text="@string/noTime" />
 
         <TextView
             android:id="@+id/endTime"
@@ -31,7 +33,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_margin="4dp"
-            android:text="0 min 0 sec" />
+            android:text="@string/noTime" />
 
         <SeekBar
             android:id="@+id/seekBar"
@@ -46,24 +48,19 @@
         android:id="@+id/songLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-         >
+        android:layout_margin="2dp"
+        android:background="@color/light_text"
+        android:padding="8dp" >
 
         <ImageView
             android:id="@+id/idAlbumArt"
             android:layout_width="92dp"
             android:layout_height="92dp"
             android:layout_margin="8dp"
+            android:background="#000000"
+            android:contentDescription="@string/desc_album_art"
+            android:padding="2dp"
             android:src="@drawable/ic_launcher" />
-
-        <TextView
-            android:id="@+id/idSongLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/idAlbumArt"
-            android:layout_margin="4dp"
-            android:layout_toRightOf="@+id/idAlbumArt"
-            android:text="TextView" />
 
         <TextView
             android:id="@+id/idSongArtist"
@@ -73,7 +70,9 @@
             android:layout_below="@+id/idSongLabel"
             android:layout_margin="4dp"
             android:layout_toRightOf="@+id/idAlbumArt"
-            android:text="TextView" />
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/none" />
 
         <TextView
             android:id="@+id/idSongDuration"
@@ -83,7 +82,9 @@
             android:layout_below="@+id/idSongAlbum"
             android:layout_margin="4dp"
             android:layout_toRightOf="@+id/idAlbumArt"
-            android:text="TextView" />
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/none" />
 
         <TextView
             android:id="@+id/idSongAlbum"
@@ -93,8 +94,21 @@
             android:layout_below="@+id/idSongArtist"
             android:layout_margin="4dp"
             android:layout_toRightOf="@+id/idAlbumArt"
-            android:text="TextView" />
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/none" />
 
+        <TextView
+            android:id="@+id/idSongLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignRight="@+id/idSongArtist"
+            android:layout_margin="4dp"
+            android:layout_toRightOf="@+id/idAlbumArt"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/none" />
     </RelativeLayout>
 
 </RelativeLayout>

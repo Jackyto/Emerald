@@ -1,17 +1,25 @@
 package com.emerald.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.emerald.MainActivity;
 import com.emerald.MusicManager;
 import com.emerald.R;
 import com.emerald.containers.Album;
 import com.emerald.containers.AlbumListAdapter;
+import com.emerald.containers.ExpandableAlbumListAdapter;
+import com.emerald.containers.AlbumGroup;
+import com.emerald.containers.Song;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -30,53 +38,86 @@ public class AlbumFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.album_frag, container, false);
+		View rootView = null;
 
-		ListView listView = (ListView) rootView.findViewById(R.id.album_list);
+		if (!MainActivity.isFullAlbum()) {
+			rootView = inflater.inflate(R.layout.album_frag, container, false);
 
-		if (MainActivity.isFromDrawer()) {
-			adapter = new AlbumListAdapter(getActivity().getApplicationContext(), R.layout.album_row, MainActivity.getManager().getAlbumList());
-			MainActivity.setFromDrawer(false);
-		} else {
-			if (MainActivity.getManager().getAlbumListFromArtist(MusicManager.getCurrentArtist()).size() > 0) {
-				adapter = new AlbumListAdapter(getActivity().getApplicationContext(),
-						R.layout.album_row,
-						MainActivity.getManager().getAlbumListFromArtist(MusicManager.getCurrentArtist()));
-			}
-			else {
-				MusicManager.setCurrentAlbum(null);
-				((MainActivity) getActivity()).changeView(MainActivity.getFragmentIndex() + 1);
-				return rootView;
-			}
-		}
+			ListView listView = (ListView) rootView.findViewById(R.id.album_list);
 
-		View header = inflater.inflate(R.layout.header_row, null);
-
-		TextView label = (TextView) header.findViewById(R.id.label);
-		label.setText("All albums");
-
-		listView.addHeaderView(header);
-
-		if (adapter != null)
-			listView.setAdapter(adapter);
-
-		listView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> adapter, View v, int pos,
-					long arg3) {
-
+			if (MainActivity.isFromDrawer()) {
+				adapter = new AlbumListAdapter(getActivity().getApplicationContext(), R.layout.album_row, MainActivity.getManager().getAlbumList());
 				MainActivity.setFromDrawer(false);
-				if (pos == 0) {
-					MainActivity.setFullAlbum(true);
-					MusicManager.setCurrentAlbum(null);
+			} else {
+				if (MusicManager.getCurrentArtist() != null) {
+					adapter = new AlbumListAdapter(getActivity().getApplicationContext(),
+							R.layout.album_row,
+							MainActivity.getManager().getAlbumListFromArtist(MusicManager.getCurrentArtist()));
 				}
 				else {
-					MusicManager.setCurrentAlbum((Album) adapter.getItemAtPosition(pos));
+					((MainActivity) getActivity()).changeView(MainActivity.getFragmentIndex() + 1);
+					return rootView;
 				}
-				((MainActivity) getActivity()).changeView(MainActivity.getFragmentIndex() + 1);
-
 			}
-		});
+
+			View header = inflater.inflate(R.layout.header_row, null);
+
+			TextView label = (TextView) header.findViewById(R.id.label);
+			label.setText(R.string.allAlbum);
+
+			listView.addHeaderView(header);
+
+			if (adapter != null)
+				listView.setAdapter(adapter);
+
+			listView.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> adapter, View v, int pos,
+						long arg3) {
+
+					MainActivity.setFromDrawer(false);
+					if (pos == 0) {
+						MainActivity.setFullAlbum(true);
+						((MainActivity) getActivity()).changeView(MainActivity.getFragmentIndex());
+					}
+					else {
+						MusicManager.setCurrentAlbum((Album) adapter.getItemAtPosition(pos));
+						MusicManager.setCurrentArtist(MusicManager.getArtistFromAlbum(MusicManager.getCurrentAlbum()));
+						((MainActivity) getActivity()).changeView(MainActivity.getFragmentIndex() + 1);
+					}
+				}
+			});
+		} else {
+			MainActivity.setFullAlbum(false);
+			
+			rootView = inflater.inflate(R.layout.exp_song_frag, container, false);
+
+			SparseArray<AlbumGroup> groups = new SparseArray<AlbumGroup>();
+
+			List<Album>			albums = new ArrayList<Album>();
+
+			if (MusicManager.getCurrentArtist() == null) 
+				albums = MainActivity.getManager().getAlbumList();
+			else
+				albums = MainActivity.getManager().getAlbumListFromArtist(MusicManager.getCurrentArtist());
+
+			List<Song>			songs = new ArrayList<Song>();
+
+			for (int j = 0; j < albums.size(); j++) {
+				AlbumGroup group = new AlbumGroup(albums.get(j));
+				songs = MainActivity.getManager().getSongListFromAlbum(albums.get(j));
+				for (int i = 0; i < songs.size(); i++) {
+					group.children.add(songs.get(i));
+				}
+				groups.append(j, group);
+			}
+
+			ExpandableListView listView = (ExpandableListView) rootView.findViewById(R.id.expListView);
+			ExpandableAlbumListAdapter adapter = new ExpandableAlbumListAdapter(getActivity(),
+					groups);
+			listView.setChildIndicator(null);
+			listView.setAdapter(adapter);
+		}
 
 		return rootView;
 	}

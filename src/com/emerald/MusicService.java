@@ -84,12 +84,6 @@ public class MusicService extends Service {
 		}
 	}
 
-	@Override
-	public void onDestroy() {
-		// TODO Auto-generated method stub
-		stop();
-	}
-
 	public MediaPlayer getPlayer() {
 		return player;
 	}

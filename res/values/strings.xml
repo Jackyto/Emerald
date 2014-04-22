@@ -6,7 +6,11 @@
     <string name="title_artists">Artists</string>
     <string name="title_albums">Albums</string>
     <string name="title_songs">Songs</string>
-    <string name="album_art">Album art</string>
+    <string name="desc_album_art">Album art</string>
+    <string name="desc_button_player">Player button</string>
+    <string name="none">N/A</string>
+    <string name="noTime">0 min 0 sec</string>
+    <string name="allAlbum">All Albums</string>
     <string name="title_playlist">Playlists</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

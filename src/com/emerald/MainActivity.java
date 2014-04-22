@@ -50,21 +50,19 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 	private ImageButton			playButton, nextButton, prevButton;
 	private TextView			songLabel;
 
-	private Utilities			utils;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
 		setManager(new MusicManager(getApplicationContext()));
-		
+
 		Song lastSong = MusicManager.getUtils().readFromInternalStorage(getApplicationContext());
 		if (lastSong != null) {
 			MusicManager.setCurrentSong(lastSong);
 			MusicManager.setCurrentAlbum(MusicManager.getAlbumFromSong(lastSong));
 		}
-		
+
 		mNavigationDrawerFragment = (NavigationDrawerFragment)
 				getFragmentManager().findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
@@ -121,11 +119,11 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 	}
 
 	public void next() {
-		MusicManager.getPlaylist().setIndex(MusicManager.getPlaylist().getIndex() + 1);
-		if (MusicManager.getPlaylist().getIndex() == MusicManager.getPlaylist().getSize())
-			MusicManager.getPlaylist().setIndex(0);
+		MusicManager.getCurrentPlaylist().setIndex(MusicManager.getCurrentPlaylist().getIndex() + 1);
+		if (MusicManager.getCurrentPlaylist().getIndex() == MusicManager.getCurrentPlaylist().getSize())
+			MusicManager.getCurrentPlaylist().setIndex(0);
 
-		MusicManager.setCurrentSong(MusicManager.getPlaylist().getPlaylist().get(MusicManager.getPlaylist().getIndex()));
+		MusicManager.setCurrentSong(MusicManager.getCurrentPlaylist().getPlaylist().get(MusicManager.getCurrentPlaylist().getIndex()));
 
 		mService.next();
 		songLabel.setText(MusicManager.getCurrentSong().getTitle() + " by " + MusicManager.getCurrentSong().getArtist());
@@ -141,11 +139,11 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 	}
 
 	public void prev() {
-		MusicManager.getPlaylist().setIndex(MusicManager.getPlaylist().getIndex() - 1);
-		if (MusicManager.getPlaylist().getIndex() < 0)
-			MusicManager.getPlaylist().setIndex(MusicManager.getPlaylist().getSize() - 1);
+		MusicManager.getCurrentPlaylist().setIndex(MusicManager.getCurrentPlaylist().getIndex() - 1);
+		if (MusicManager.getCurrentPlaylist().getIndex() < 0)
+			MusicManager.getCurrentPlaylist().setIndex(MusicManager.getCurrentPlaylist().getSize() - 1);
 
-		MusicManager.setCurrentSong(MusicManager.getPlaylist().getPlaylist().get(MusicManager.getPlaylist().getIndex()));
+		MusicManager.setCurrentSong(MusicManager.getCurrentPlaylist().getPlaylist().get(MusicManager.getCurrentPlaylist().getIndex()));
 
 		mService.prev();
 		songLabel.setText(MusicManager.getCurrentSong().getTitle() + " by " + MusicManager.getCurrentSong().getArtist());
@@ -193,9 +191,6 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
-		utils.saveToInternalStorage(getApplicationContext(), MusicManager.getCurrentSong());
-		mService.stop();
-		unbindService(mConnection);
 		super.onDestroy();
 	}
 
@@ -292,11 +287,19 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
-		fragmentIndex--;
-		if (fragmentIndex < 0)
-			super.onBackPressed();
-		else
-			changeView(fragmentIndex);
+		if (fragmentIndex == 4)
+			changeView(0);
+		else {
+			fragmentIndex--;
+			if (fragmentIndex < 0) {
+				MusicManager.getUtils().saveToInternalStorage(getApplicationContext(), MusicManager.getCurrentSong());
+				if (mService != null)
+					mService.stop();
+				unbindService(mConnection);
+				finish();
+			} else
+				changeView(fragmentIndex);
+		}
 	}
 
 	public void restoreActionBar() {

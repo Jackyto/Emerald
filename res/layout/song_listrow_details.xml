@@ -1,0 +1,46 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:background="@color/light_text"
+    android:clickable="true"
+    android:orientation="vertical"
+    android:paddingLeft="40dp"
+    tools:context=".MainActivity" >
+
+    <TextView
+        android:id="@+id/expSongLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp"
+        android:layout_toLeftOf="@+id/expSongDuration"
+        android:paddingTop="8dp"
+        android:textAlignment="textEnd"
+        android:textColor="@color/very_dark_green"
+        android:textSize="14sp" >
+
+    </TextView>
+
+    <View
+        android:id="@+id/View1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/expSongLabel"
+        android:background="@android:color/black" />
+
+    <TextView
+        android:id="@+id/expSongDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:padding="8dp"
+        android:textColor="@color/very_dark_green"
+        android:textSize="12sp" />
+
+</RelativeLayout>
