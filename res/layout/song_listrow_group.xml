@@ -9,8 +9,10 @@
         android:layout_height="?android:attr/listPreferredItemHeight"
         android:layout_alignParentLeft="true"
         android:layout_toLeftOf="@+id/expAlbumArt"
+        android:ellipsize="end"
         android:gravity="center"
         android:paddingTop="8dp"
+        android:singleLine="true"
         android:textAlignment="textEnd"
         android:textColor="@color/very_dark_green"
         android:textSize="18sp" />

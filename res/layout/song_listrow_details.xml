@@ -17,11 +17,12 @@
         android:layout_alignParentTop="true"
         android:layout_margin="10dp"
         android:layout_toLeftOf="@+id/expSongDuration"
+        android:ellipsize="end"
         android:paddingTop="8dp"
+        android:singleLine="true"
         android:textAlignment="textEnd"
         android:textColor="@color/very_dark_green"
         android:textSize="14sp" >
-
     </TextView>
 
     <View
@@ -38,8 +39,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:ellipsize="end"
         android:gravity="center"
         android:padding="8dp"
+        android:singleLine="true"
         android:textColor="@color/very_dark_green"
         android:textSize="12sp" />
 

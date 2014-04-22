@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="bottom"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
@@ -24,7 +23,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            android:text="@string/noTime" />
+            android:text="@string/noTime"
+            android:textColor="@color/very_dark_green" />
 
         <TextView
             android:id="@+id/endTime"
@@ -33,7 +33,8 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_margin="4dp"
-            android:text="@string/noTime" />
+            android:text="@string/noTime"
+            android:textColor="@color/very_dark_green" />
 
         <SeekBar
             android:id="@+id/seekBar"
@@ -72,7 +73,8 @@
             android:layout_toRightOf="@+id/idAlbumArt"
             android:ellipsize="end"
             android:singleLine="true"
-            android:text="@string/none" />
+            android:text="@string/none"
+            android:textColor="@color/very_dark_green" />
 
         <TextView
             android:id="@+id/idSongDuration"
@@ -84,7 +86,8 @@
             android:layout_toRightOf="@+id/idAlbumArt"
             android:ellipsize="end"
             android:singleLine="true"
-            android:text="@string/none" />
+            android:text="@string/none"
+            android:textColor="@color/very_dark_green" />
 
         <TextView
             android:id="@+id/idSongAlbum"
@@ -96,7 +99,8 @@
             android:layout_toRightOf="@+id/idAlbumArt"
             android:ellipsize="end"
             android:singleLine="true"
-            android:text="@string/none" />
+            android:text="@string/none"
+            android:textColor="@color/very_dark_green" />
 
         <TextView
             android:id="@+id/idSongLabel"
@@ -108,7 +112,8 @@
             android:layout_toRightOf="@+id/idAlbumArt"
             android:ellipsize="end"
             android:singleLine="true"
-            android:text="@string/none" />
+            android:text="@string/none"
+            android:textColor="@color/very_dark_green" />
     </RelativeLayout>
 
 </RelativeLayout>
