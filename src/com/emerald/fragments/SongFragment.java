@@ -71,7 +71,8 @@ public class SongFragment extends Fragment {
 					MusicManager.setCurrentPlaylist(new Playlist(MainActivity.getManager().getSongListFromAlbum(MusicManager.getCurrentAlbum()), pos, "current"));
 				else
 					MusicManager.setCurrentPlaylist(new Playlist(MainActivity.getManager().getSongListFromArtist(MusicManager.getCurrentArtist()), pos, "current"));
-
+				
+				MusicManager.getCurrentPlaylist().setIndex(pos);
 				MainActivity.setFromDrawer(false);
 				MusicManager.setCurrentSong((Song) adapter.getItemAtPosition(pos));
 				((MainActivity) getActivity()).play();

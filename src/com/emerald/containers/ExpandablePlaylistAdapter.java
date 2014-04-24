@@ -41,17 +41,17 @@ public class ExpandablePlaylistAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getChildView(int groupPosition, int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
-		final String children = (String) getChild(groupPosition, childPosition);
+		final Song children = (Song) getChild(groupPosition, childPosition);
 		TextView text = null;
 		if (convertView == null) {
 			convertView = inflater.inflate(R.layout.playlist_listrow_details, null);
 		}
 		text = (TextView) convertView.findViewById(R.id.expPlaylistSongLabel);
-		text.setText(children);
+		text.setText(children.getTitle());
 		convertView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(activity, children,
+				Toast.makeText(activity, children.getTitle(),
 						Toast.LENGTH_SHORT).show();
 			}
 		});

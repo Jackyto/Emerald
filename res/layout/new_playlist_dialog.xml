@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/new_playlist_border"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/new_playlist_border"
+        android:padding="8dp"
+        android:text="@string/newPlaylist"
+        android:textColor="@color/light_text" />
+
+    <EditText
+        android:id="@+id/playlistLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/textView1"
+        android:layout_margin="16dp"
+        android:background="@color/light_text"
+        android:ems="10"
+        android:hint="@string/newPlaylistHint"
+        android:padding="8dp" />
+
+    <Button
+        android:id="@+id/btn_yes"
+        android:layout_width="100dp"
+        android:layout_height="48dp"
+        android:layout_alignLeft="@+id/playlistLabel"
+        android:layout_below="@+id/playlistLabel"
+        android:layout_marginBottom="12dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:background="@color/light_text"
+        android:clickable="true"
+        android:padding="8dp"
+        android:text="@string/confirm"
+        android:textColor="@color/very_dark_green"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btn_no"
+        android:layout_width="100dp"
+        android:layout_height="48dp"
+        android:layout_alignRight="@+id/playlistLabel"
+        android:layout_below="@+id/playlistLabel"
+        android:layout_marginBottom="12dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:background="@color/light_text"
+        android:clickable="true"
+        android:padding="8dp"
+        android:text="@string/cancel"
+        android:textColor="@color/very_dark_green"
+        android:textStyle="bold" />
+
+</RelativeLayout>

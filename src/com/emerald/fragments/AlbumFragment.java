@@ -96,7 +96,8 @@ public class AlbumFragment extends Fragment {
 
 			List<Album>			albums = new ArrayList<Album>();
 
-			if (MusicManager.getCurrentArtist() == null) 
+			if (MusicManager.getCurrentArtist() == null
+					|| MainActivity.isFromDrawer()) 
 				albums = MainActivity.getManager().getAlbumList();
 			else
 				albums = MainActivity.getManager().getAlbumListFromArtist(MusicManager.getCurrentArtist());

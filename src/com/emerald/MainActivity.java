@@ -1,6 +1,5 @@
 package com.emerald;
 
-import com.emerald.containers.Song;
 import com.emerald.fragments.AlbumFragment;
 import com.emerald.fragments.ArtistFragment;
 import com.emerald.fragments.HomeFragment;
@@ -15,6 +14,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.SQLException;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
@@ -57,10 +57,12 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 
 		setManager(new MusicManager(getApplicationContext()));
 
-		Song lastSong = MusicManager.getUtils().readFromInternalStorage(getApplicationContext());
-		if (lastSong != null) {
-			MusicManager.setCurrentSong(lastSong);
-			MusicManager.setCurrentAlbum(MusicManager.getAlbumFromSong(lastSong));
+		System.out.println("BEFORE LOAD");
+		loadPlaylists();
+		
+		if (MusicManager.getCurrentPlaylist().getPlaylist().size() > 0) {
+			MusicManager.setCurrentSong(MusicManager.getCurrentPlaylist().getPlaylist().get(0));
+			MusicManager.setCurrentAlbum(MusicManager.getAlbumFromSong(MusicManager.getCurrentSong()));
 		}
 
 		mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -81,10 +83,9 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 
 		songLabel = (TextView) findViewById(R.id.songLabel);
 
-		if (MusicManager.getCurrentSong() != null) {
+		if (MusicManager.getCurrentSong() != null) 
 			songLabel.setText(MusicManager.getCurrentSong().getTitle() + " by " + MusicManager.getCurrentSong().getArtist());
-			MusicManager.createPlaylistFromSong(MusicManager.getCurrentSong());
-		}
+
 
 		playButton.setOnClickListener(new OnClickListener() {
 
@@ -292,7 +293,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 		else {
 			fragmentIndex--;
 			if (fragmentIndex < 0) {
-				MusicManager.getUtils().saveToInternalStorage(getApplicationContext(), MusicManager.getCurrentSong());
+				savePlaylists();
 				if (mService != null)
 					mService.stop();
 				unbindService(mConnection);
@@ -300,6 +301,38 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 			} else
 				changeView(fragmentIndex);
 		}
+	}
+
+	private void savePlaylists() {
+		getManager().open();
+
+		MusicManager.getDbHelper().createTablesFromPlaylists(getManager().getDatabase());
+		getManager().savePlaylistNames();
+		getManager().createPlaylistInDB(MusicManager.getCurrentPlaylist());
+
+		int i;
+		for (i = 0; i < MusicManager.getUserPlaylists().size(); i++)
+			getManager().createPlaylistInDB(MusicManager.getUserPlaylists().get(i));
+
+		getManager().close();
+	}
+
+	private void loadPlaylists() {
+		getManager().open();
+
+		try {
+			MusicManager.setCurrentPlaylist(getManager().createPlaylistFromDB(MusicManager.CURRENT));
+			if (MusicManager.getPlaylistNames() != null) {
+				int i;
+				for (i = 0; i < MusicManager.getPlaylistNames().size(); i++) {
+					MusicManager.getUserPlaylists().add(getManager().createPlaylistFromDB(MusicManager.getPlaylistNames().get(i)));
+				}
+			} 
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+
+		getManager().close();
 	}
 
 	public void restoreActionBar() {

@@ -5,16 +5,17 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.v4.util.ArrayMap;
+import android.util.Log;
 
 import com.emerald.containers.Album;
 import com.emerald.containers.Artist;
@@ -28,37 +29,166 @@ public class MusicManager implements Serializable{
 	private static final long serialVersionUID = -839763128187787446L;
 
 	private static Context	context;
-	
-	private static Artist		currentArtist;
-	private static Album		currentAlbum;
-	private static Song			currentSong;
-	
-	private static List<Artist>	artistList;
-	private static List<Album>	albumList;
-	private static List<Song>	songList;
+
+	private static Artist					currentArtist;
+	private static Album					currentAlbum;
+	private static Song						currentSong;
+
+	private static List<Artist>				artistList;
+	private static List<Album>				albumList;
+	private static List<Song>				songList;
 
 	private static Playlist					currentPlaylist;
-	private static Map<String, Playlist>	userPlaylists;
+	private static List<Playlist>			userPlaylists;
+	private static List<String>				playlistNames;
 
-	private static Utilities	utils;
-	
+	private SQLiteDatabase 					database;
+	private static PlaylistSQLiteHelper		dbHelper;
+
+	private String[] 						allColumns = 
+		{PlaylistSQLiteHelper.COLUMN_ID,
+			PlaylistSQLiteHelper.COLUMN_TITLE,
+			PlaylistSQLiteHelper.COLUMN_ARTIST,
+			PlaylistSQLiteHelper.COLUMN_ALBUM,
+			PlaylistSQLiteHelper.COLUMN_PATH,
+			PlaylistSQLiteHelper.COLUMN_DURATION};
+
+	private String[]						nameColumns =
+		{PlaylistSQLiteHelper.COLUMN_ID,
+			PlaylistSQLiteHelper.COLUMN_NAME
+		};
+
+	private static Utilities				utils;
+
+	public static final String				CURRENT = "current";
+
 	static int 						i;
-	
+
 	public MusicManager(Context context) {
 		super();
 		MusicManager.context = context;
 		setUtils(new Utilities());
-		
+
 		setArtistList(new ArrayList<Artist>());
 		setAlbumList(new ArrayList<Album>());
 		setSongList(new ArrayList<Song>());
-		setUserPlaylists(new ArrayMap<String, Playlist>());
-		
-		setCurrentPlaylist(new Playlist(new ArrayList<Song>(), 0, "current"));
-		
+		setUserPlaylists(new ArrayList<Playlist>());
+		setPlaylistNames(new ArrayList<String>());
+
+		setCurrentPlaylist(new Playlist(new ArrayList<Song>(), 0, CURRENT));
+
+		setDbHelper(new PlaylistSQLiteHelper(context));
+
 		retrieveArtists();
 		retrieveAlbums();
 		retrieveSongs();
+		retrivePlaylistNames();
+	}
+
+	private void retrivePlaylistNames() {
+		open();
+		try {
+			Cursor cursor = database.query(PlaylistSQLiteHelper.TABLE_REF,
+					nameColumns, null, null, null, null, null);
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					Playlist p = cursorToPlaylist(cursor);
+					userPlaylists.add(p);
+					System.out.println(p.getName());
+					cursor.moveToNext();
+				}
+				// make sure to close the cursor
+				cursor.close();
+			}
+
+		}  catch (SQLException e) {
+			System.out.println("PAS GOOD");
+			Log.e("Exception on query", e.toString());
+		}
+		close();
+	}
+
+	public void open() throws SQLException {
+		database = dbHelper.getWritableDatabase();
+	}
+	public void close() {
+		dbHelper.close();
+	}
+
+	public void savePlaylistNames() {
+		for (i = 0; i < userPlaylists.size(); i++) {
+			ContentValues values = new ContentValues();
+
+			values.put(PlaylistSQLiteHelper.COLUMN_NAME, userPlaylists.get(i).getName());
+
+			database.insert(PlaylistSQLiteHelper.TABLE_REF, null, values);
+		}
+	}
+
+	public void createPlaylistInDB(Playlist p) {
+		System.out.println(p.getName());
+		if (p.getPlaylist() != null) {
+			int k;
+			for (k = p.getIndex(), i = 0; i < p.getPlaylist().size(); i++) {
+
+				if (k == p.getPlaylist().size())
+					k = 0;
+
+				ContentValues values = new ContentValues();
+
+				values.put(PlaylistSQLiteHelper.COLUMN_TITLE, p.getPlaylist().get(i).getTitle());
+				values.put(PlaylistSQLiteHelper.COLUMN_ARTIST, p.getPlaylist().get(i).getArtist());
+				values.put(PlaylistSQLiteHelper.COLUMN_ALBUM, p.getPlaylist().get(i).getAlbum());
+				values.put(PlaylistSQLiteHelper.COLUMN_PATH, p.getPlaylist().get(i).getPath());
+				values.put(PlaylistSQLiteHelper.COLUMN_DURATION, String.valueOf(p.getPlaylist().get(i).getDuration()));
+
+				String table = p.getName();
+				System.out.println(p.getPlaylist().get(i).getTitle());
+				database.insert(table, null, values);	
+			}
+		}
+	}
+
+	public Playlist createPlaylistFromDB(String tbl_name) {
+		System.out.println("AFTER OPEN DB LOADING");
+		System.out.println(tbl_name);
+
+		Playlist p = new Playlist(new ArrayList<Song>(), 0, tbl_name);
+		try {
+			Cursor cursor = database.query(tbl_name,
+					allColumns, null, null, null, null, null);
+			if (cursor != null) {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					Song song = cursorToSong(cursor);
+					System.out.println(song.getTitle());
+
+					p.getPlaylist().add(song);
+					cursor.moveToNext();
+				}
+				cursor.close();
+			}
+
+		}  catch (SQLException e) {
+			System.out.println("PAS GOOD");
+			Log.e("Exception on query", e.toString());
+		}
+		return p;
+	}
+
+	private Playlist cursorToPlaylist(Cursor cursor) {
+		return new Playlist(null, 0, cursor.getString(1));
+	}
+
+	private Song cursorToSong(Cursor cursor) {
+		return new Song(cursor.getInt(0),
+				cursor.getString(1),
+				cursor.getString(2),
+				cursor.getString(3),
+				"", 
+				cursor.getString(4), 
+				cursor.getInt(5));
 	}
 
 	private void		retrieveArtists(){		
@@ -106,12 +236,12 @@ public class MusicManager implements Serializable{
 
 		if (cursor.moveToFirst()) {
 			do {
-				
+
 				tmp = new Album(cursor.getInt(0),
-								cursor.getString(1),
-								cursor.getString(2),
-								cursor.getString(3),
-								cursor.getInt(4));
+						cursor.getString(1),
+						cursor.getString(2),
+						cursor.getString(3),
+						cursor.getInt(4));
 
 				Uri sArtworkUri = Uri
 						.parse("content://media/external/audio/albumart");
@@ -121,7 +251,7 @@ public class MusicManager implements Serializable{
 				try {
 					bitmap = MediaStore.Images.Media.getBitmap(
 							context.getContentResolver(), albumArtUri);
-					
+
 				} catch (FileNotFoundException exception) {
 					exception.printStackTrace();
 					bitmap = BitmapFactory.decodeResource(context.getResources(),
@@ -133,13 +263,13 @@ public class MusicManager implements Serializable{
 					e.printStackTrace();
 				}
 				tmp.setArt(bitmap);
-				
+
 				albumList.add(tmp);
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
 	}
-	
+
 	private void		retrieveSongs(){
 		String		selection = MediaStore.Audio.Media._ID + " != 0";
 		String[]	projection = {
@@ -160,21 +290,21 @@ public class MusicManager implements Serializable{
 
 		if (cursor.moveToFirst()) {
 			do {
-				
+
 				tmp = new Song(cursor.getInt(0),
-								cursor.getString(1),
-								cursor.getString(2),
-								cursor.getString(3),
-								cursor.getString(4),
-								cursor.getString(5),
-								cursor.getInt(6));
+						cursor.getString(1),
+						cursor.getString(2),
+						cursor.getString(3),
+						cursor.getString(4),
+						cursor.getString(5),
+						cursor.getInt(6));
 
 				songList.add(tmp);
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
 	}
-	
+
 	public int		getSongIndex(Song song) {
 		for (i = 0; i < currentPlaylist.getSize(); i++)
 			if (currentPlaylist.getPlaylist().get(i).getPath() == song.getPath())
@@ -184,55 +314,62 @@ public class MusicManager implements Serializable{
 
 	public List<Song>  	getSongListFromArtist(Artist artist) {
 		List<Song>		songListArtist = new ArrayList<Song>();
-		
+
 		for (i = 0; i < songList.size(); i++) {
 			if (songList.get(i).getArtist().contentEquals(artist.getName()))
 				songListArtist.add(songList.get(i));
 		}
 		return songListArtist;
 	}	
-	
+
 	public List<Album> getAlbumListFromArtist(Artist artist) {
 		List<Album>		artistAlbumList = new ArrayList<Album>();
 
 		for (i = 0; i < albumList.size(); i++) 
 			if (albumList.get(i).getArtist().contentEquals(artist.getName())) 
 				artistAlbumList.add(albumList.get(i));
-		
+
 		return artistAlbumList;
 	}	
-	 
+
 	public List<Song> getSongListFromAlbum(Album album) {
 		List<Song>		albumSongList = new ArrayList<Song>();
-		
+
 		for (i = 0; i < songList.size(); i++) 
 			if (songList.get(i).getAlbum().equals(album.getName())) 
 				albumSongList.add(songList.get(i));
-	
+
 		return albumSongList;
 	}
-	
+
 	public static void createPlaylistFromSong(Song song) {
-		
+
 		for (i = 0; i < songList.size(); i++) 
 			if (songList.get(i).getAlbum().contentEquals(song.getAlbum()))
 				currentPlaylist.getPlaylist().add(songList.get(i));
 	}
-	
+
 	public static Album		getAlbumFromSong(Song song) {		
 		for (i = 0; i < albumList.size(); i++) 
 			if (albumList.get(i).getName().contentEquals(song.getAlbum()))
 				return albumList.get(i);
 		return null;
 	}
-	
+
 	public static Artist	getArtistFromAlbum(Album album) {
 		for (i = 0; i < artistList.size(); i++)
 			if (artistList.get(i).getName().contentEquals(album.getArtist()))
 				return artistList.get(i);
 		return null;
 	}
-	
+
+	public static boolean 		isPlaylistExists(Playlist p) {
+		for (i = 0; i < userPlaylists.size(); i++)
+			if (p.getName().contentEquals(userPlaylists.get(i).getName()))
+				return true;
+		return false;
+	}
+
 	public List<Artist> getArtistList() {
 		return artistList;
 	}
@@ -268,7 +405,7 @@ public class MusicManager implements Serializable{
 	public static Album getCurrentAlbum() {
 		return currentAlbum;
 	}
-	
+
 	public static void setCurrentAlbum(Album currentAlbum) {
 		MusicManager.currentAlbum = currentAlbum;
 	}
@@ -279,6 +416,14 @@ public class MusicManager implements Serializable{
 
 	public static void setCurrentSong(Song currentSong) {
 		MusicManager.currentSong = currentSong;
+	}
+
+	public static List<String> getPlaylistNames() {
+		return playlistNames;
+	}
+
+	public static void setPlaylistNames(List<String> playlistNames) {
+		MusicManager.playlistNames = playlistNames;
 	}
 
 	public static Playlist getCurrentPlaylist() {
@@ -293,15 +438,35 @@ public class MusicManager implements Serializable{
 		return utils;
 	}
 
-	public static Map<String, Playlist> getUserPlaylists() {
+	public static List<Playlist> getUserPlaylists() {
 		return userPlaylists;
 	}
 
-	public static void setUserPlaylists(Map<String, Playlist> userPlaylists) {
+	public static void setUserPlaylists(List<Playlist> userPlaylists) {
 		MusicManager.userPlaylists = userPlaylists;
 	}
 
 	public static void setUtils(Utilities utils) {
 		MusicManager.utils = utils;
+	}
+
+	public static void fetchPlaylists() {
+
+	}
+
+	public static PlaylistSQLiteHelper getDbHelper() {
+		return dbHelper;
+	}
+
+	public static void setDbHelper(PlaylistSQLiteHelper dbHelper) {
+		MusicManager.dbHelper = dbHelper;
+	}
+
+	public SQLiteDatabase getDatabase() {
+		return database;
+	}
+
+	public void setDatabase(SQLiteDatabase database) {
+		this.database = database;
 	}
 }

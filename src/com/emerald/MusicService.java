@@ -57,6 +57,10 @@ public class MusicService extends Service {
 			player = MediaPlayer.create(this, songUri);
 			player.start();
 		}
+		else {
+			stop();
+			play();
+		}
 	}
 
 	public void pause() {

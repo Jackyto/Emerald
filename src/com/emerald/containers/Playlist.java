@@ -1,9 +1,14 @@
 package com.emerald.containers;
 
+import java.io.Serializable;
 import java.util.List;
 
 
-public class Playlist {
+public class Playlist implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6424861753337600028L;
 	private String		name;
 	private List<Song>	playlist;
 	private int			index;
