@@ -5,9 +5,11 @@ import java.util.List;
 
 public class PlaylistGroup {
 	public String name;
-	public List<Song> children = new ArrayList<Song>();
+	public List<Song> children;
 
 	public PlaylistGroup(String string) {
 		this.name = string;
+		this.children = new ArrayList<Song>();
+
 	}
 }

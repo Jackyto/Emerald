@@ -1,5 +1,7 @@
 package com.emerald.containers;
 
+import com.emerald.MainActivity;
+import com.emerald.MusicManager;
 import com.emerald.R;
 
 import android.app.Activity;
@@ -7,9 +9,11 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckedTextView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,20 +43,44 @@ public class ExpandablePlaylistAdapter extends BaseExpandableListAdapter {
 	}
 
 	@Override
-	public View getChildView(int groupPosition, int childPosition,
+	public View getChildView(final int groupPosition, final int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
 		final Song children = (Song) getChild(groupPosition, childPosition);
-		TextView text = null;
+		TextView textSong, textArtist, textDuration = null;
 		if (convertView == null) {
 			convertView = inflater.inflate(R.layout.playlist_listrow_details, null);
 		}
-		text = (TextView) convertView.findViewById(R.id.expPlaylistSongLabel);
-		text.setText(children.getTitle());
+		
+		ImageView iv = (ImageView) convertView.findViewById(R.id.expPlaylistAlbumArt);
+		textSong = (TextView) convertView.findViewById(R.id.expPlaylistSongLabel);
+		textArtist = (TextView) convertView.findViewById(R.id.expPlaylistArtistLabel);
+		textDuration = (TextView) convertView.findViewById(R.id.expPlaylistSongDuration);
+
+		iv.setImageBitmap(MusicManager.getAlbumFromSong(children).getArt());
+		textSong.setText(children.getTitle());
+		textArtist.setText(children.getArtist());
+		textDuration.setText(MusicManager.getUtils().milliSecondsToClock(children.getDuration()));
+		
 		convertView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(activity, children.getTitle(),
-						Toast.LENGTH_SHORT).show();
+				MusicManager.setCurrentPlaylist(new Playlist(groups.get(groupPosition).children, 0, "current"));
+				
+				MainActivity.setFromDrawer(false);
+				MusicManager.setCurrentSong(children);
+				((MainActivity) activity).play();
+				((MainActivity) activity).refreshPlayer();
+			}
+		});
+		convertView.setOnLongClickListener(new OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View v) {
+				MusicManager.getCurrentPlaylist().getPlaylist().remove(groups.get(groupPosition).children);
+				Toast.makeText(activity, groups.get(groupPosition).name + " deleted", Toast.LENGTH_SHORT).show();
+				groups.get(groupPosition).children.remove(childPosition);
+				((MainActivity) activity).changeView(MainActivity.getFragmentIndex());
+				return true;
 			}
 		});
 		return convertView;
@@ -60,7 +88,7 @@ public class ExpandablePlaylistAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public int getChildrenCount(int groupPosition) {
-		return groups.get(groupPosition).children.size();
+			return groups.get(groupPosition).children.size();
 	}
 
 	@Override
@@ -80,14 +108,20 @@ public class ExpandablePlaylistAdapter extends BaseExpandableListAdapter {
 	}
 
 	@Override
-	public View getGroupView(int groupPosition, boolean isExpanded,
+	public View getGroupView(final int groupPosition, boolean isExpanded,
 			View convertView, ViewGroup parent) {
 		if (convertView == null) {
 			convertView = inflater.inflate(R.layout.playlist_listrow_group, null);
 		}
 		PlaylistGroup group = (PlaylistGroup) getGroup(groupPosition);
-		((CheckedTextView) convertView).setText(group.name);
-		((CheckedTextView) convertView).setChecked(isExpanded);
+		
+		CheckedTextView ctv = (CheckedTextView) convertView.findViewById(R.id.expPlaylistLabel);
+		ctv.setText(group.name);
+		ctv.setChecked(isExpanded);
+		
+		TextView	tv = (TextView) convertView.findViewById(R.id.expNbSongs);
+		tv.setText(group.children.size() + " song(s)");
+
 		return convertView;
 	}
 

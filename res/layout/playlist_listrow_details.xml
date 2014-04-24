@@ -1,26 +1,80 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
+    android:layout_height="wrap_content"
+    android:background="@color/light_text"
     android:clickable="true"
     android:orientation="vertical"
-    android:paddingLeft="40dp"
+    android:padding="8dp"
     tools:context=".MainActivity" >
+
+    <View
+        android:id="@+id/View1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/expPlaylistSongLabel"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_toRightOf="@+id/expPlaylistAlbumArt"
+        android:background="@android:color/black" />
+
+    <TextView
+        android:id="@+id/expPlaylistSongDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:padding="8dp"
+        android:singleLine="true"
+        android:textColor="@color/very_dark_green"
+        android:textSize="12sp" />
+
+    <ImageView
+        android:id="@+id/expPlaylistAlbumArt"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="2dp"
+        android:background="#000000"
+        android:contentDescription="@string/desc_album_art"
+        android:padding="2dp"
+        android:src="@drawable/ic_launcher" />
 
     <TextView
         android:id="@+id/expPlaylistSongLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/ic_launcher"
-        android:drawablePadding="5dp"
-        android:gravity="center_vertical"
-        android:textSize="14sp"
-        android:textStyle="bold" >
-    </TextView>
+        android:layout_alignBottom="@+id/expPlaylistAlbumArt"
+        android:layout_alignLeft="@+id/expPlaylistArtistLabel"
+        android:layout_alignRight="@+id/expPlaylistSongDuration"
+        android:layout_marginLeft="8dp"
+        android:ellipsize="end"
+        android:padding="4dp"
+        android:singleLine="true"
+        android:text="caca"
+        android:textAlignment="textEnd"
+        android:textColor="@color/very_dark_green"
+        android:textSize="14sp" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/black" />
+    <TextView
+        android:id="@+id/expPlaylistArtistLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/expPlaylistSongLabel"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="8dp"
+        android:layout_toRightOf="@+id/expPlaylistAlbumArt"
+        android:ellipsize="end"
+        android:padding="4dp"
+        android:singleLine="true"
+        android:text="caca"
+        android:textAlignment="textEnd"
+        android:textColor="@color/very_dark_green"
+        android:textSize="14sp" />
 
-</LinearLayout> 
+</RelativeLayout>

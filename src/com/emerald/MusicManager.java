@@ -94,8 +94,10 @@ public class MusicManager implements Serializable{
 				cursor.moveToFirst();
 				while (!cursor.isAfterLast()) {
 					Playlist p = cursorToPlaylist(cursor);
-					userPlaylists.add(p);
-					System.out.println(p.getName());
+					if (!isPlaylistExists(p)) {
+						userPlaylists.add(p);
+						playlistNames.add(cursor.getString(1));
+					}
 					cursor.moveToNext();
 				}
 				// make sure to close the cursor
@@ -117,10 +119,10 @@ public class MusicManager implements Serializable{
 	}
 
 	public void savePlaylistNames() {
-		for (i = 0; i < userPlaylists.size(); i++) {
+		for (i = 0; i < playlistNames.size(); i++) {
 			ContentValues values = new ContentValues();
 
-			values.put(PlaylistSQLiteHelper.COLUMN_NAME, userPlaylists.get(i).getName());
+			values.put(PlaylistSQLiteHelper.COLUMN_NAME, playlistNames.get(i));
 
 			database.insert(PlaylistSQLiteHelper.TABLE_REF, null, values);
 		}
@@ -129,11 +131,8 @@ public class MusicManager implements Serializable{
 	public void createPlaylistInDB(Playlist p) {
 		System.out.println(p.getName());
 		if (p.getPlaylist() != null) {
-			int k;
-			for (k = p.getIndex(), i = 0; i < p.getPlaylist().size(); i++) {
 
-				if (k == p.getPlaylist().size())
-					k = 0;
+			for (i = 0; i < p.getPlaylist().size(); i++) {
 
 				ContentValues values = new ContentValues();
 
@@ -144,16 +143,12 @@ public class MusicManager implements Serializable{
 				values.put(PlaylistSQLiteHelper.COLUMN_DURATION, String.valueOf(p.getPlaylist().get(i).getDuration()));
 
 				String table = p.getName();
-				System.out.println(p.getPlaylist().get(i).getTitle());
 				database.insert(table, null, values);	
 			}
 		}
 	}
 
 	public Playlist createPlaylistFromDB(String tbl_name) {
-		System.out.println("AFTER OPEN DB LOADING");
-		System.out.println(tbl_name);
-
 		Playlist p = new Playlist(new ArrayList<Song>(), 0, tbl_name);
 		try {
 			Cursor cursor = database.query(tbl_name,
@@ -162,8 +157,6 @@ public class MusicManager implements Serializable{
 				cursor.moveToFirst();
 				while (!cursor.isAfterLast()) {
 					Song song = cursorToSong(cursor);
-					System.out.println(song.getTitle());
-
 					p.getPlaylist().add(song);
 					cursor.moveToNext();
 				}
@@ -175,10 +168,17 @@ public class MusicManager implements Serializable{
 			Log.e("Exception on query", e.toString());
 		}
 		return p;
+
 	}
 
 	private Playlist cursorToPlaylist(Cursor cursor) {
 		return new Playlist(null, 0, cursor.getString(1));
+	}
+
+	public static void cleanCurrent(int to) {
+		if (currentPlaylist.getPlaylist().size() > to) 
+			for (i = currentPlaylist.getPlaylist().size() - 1; i != to; i--)
+				currentPlaylist.getPlaylist().remove(i);
 	}
 
 	private Song cursorToSong(Cursor cursor) {
@@ -356,6 +356,13 @@ public class MusicManager implements Serializable{
 		return null;
 	}
 
+	public static Artist getArtistFromSong(Song song) {
+		for (i = 0; i < artistList.size(); i++)
+			if (artistList.get(i).getName().contentEquals(song.getArtist()))
+				return artistList.get(i);
+		return null;
+	}
+
 	public static Artist	getArtistFromAlbum(Album album) {
 		for (i = 0; i < artistList.size(); i++)
 			if (artistList.get(i).getName().contentEquals(album.getArtist()))
@@ -365,9 +372,28 @@ public class MusicManager implements Serializable{
 
 	public static boolean 		isPlaylistExists(Playlist p) {
 		for (i = 0; i < userPlaylists.size(); i++)
-			if (p.getName().contentEquals(userPlaylists.get(i).getName()))
+			if (p.getName().contentEquals(userPlaylists.get(i).getName())
+					|| p.getName().contentEquals(playlistNames.get(i)))
 				return true;
 		return false;
+	}
+
+	public static boolean		isSongInPlaylist(Playlist p, Song s) {
+		if (p.getPlaylist() == null) {
+			p.setPlaylist(new ArrayList<Song>());
+			return false;
+		}
+		for (i = 0; i < p.getPlaylist().size(); i++) 
+			if (s.getTitle().contentEquals(p.getPlaylist().get(i).getTitle()))
+				return true;
+		return false;
+	}
+
+	public static Playlist fetchPlaylist(String name) {
+		for (i = 0; i < userPlaylists.size(); i++) 
+			if (userPlaylists.get(i).getName().contentEquals(name))
+				return userPlaylists.get(i);
+		return null;
 	}
 
 	public List<Artist> getArtistList() {
@@ -450,10 +476,6 @@ public class MusicManager implements Serializable{
 		MusicManager.utils = utils;
 	}
 
-	public static void fetchPlaylists() {
-
-	}
-
 	public static PlaylistSQLiteHelper getDbHelper() {
 		return dbHelper;
 	}
@@ -469,4 +491,5 @@ public class MusicManager implements Serializable{
 	public void setDatabase(SQLiteDatabase database) {
 		this.database = database;
 	}
+
 }

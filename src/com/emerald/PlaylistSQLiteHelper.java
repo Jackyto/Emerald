@@ -40,18 +40,21 @@ public class PlaylistSQLiteHelper extends SQLiteOpenHelper {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
-	@Override
-	public void onCreate(SQLiteDatabase database) {
-		//createTablesFromPlaylists(database);
-	}
-
-	public void createTablesFromPlaylists(SQLiteDatabase database) {
+	void cleanUp(SQLiteDatabase database) {
 		try {
 			for (i = 0; i < MusicManager.getUserPlaylists().size(); i++) 
-				database.execSQL("DROP TABLE IF EXISTS " + MusicManager.getUserPlaylists().get(i).getName());
-			database.execSQL("DROP TABLE IF EXISTS current");
-			database.execSQL("DROP TABLE IF EXISTS " + TABLE_REF);
-			
+				database.execSQL("drop table " + MusicManager.getUserPlaylists().get(i).getName());	
+
+			database.execSQL("drop table " + TABLE_REF);
+			database.execSQL("drop table " + MusicManager.CURRENT);
+		}
+		catch (RuntimeException e) {
+			System.out.println("Exception clean => " + e.getMessage());
+		}
+	}
+	
+	public void createTablesFromPlaylists(SQLiteDatabase database) {
+		try {
 			for (i = 0; i < MusicManager.getUserPlaylists().size(); i++) 
 				database.execSQL("create table if not exists " + MusicManager.getUserPlaylists().get(i).getName() + CREATE_QUERY);	
 
@@ -59,7 +62,7 @@ public class PlaylistSQLiteHelper extends SQLiteOpenHelper {
 			database.execSQL("create table if not exists current" + CREATE_QUERY);
 		}
 		catch (RuntimeException e) {
-			System.out.println("Exception => " + e.getMessage());
+			System.out.println("Exception create => " + e.getMessage());
 		}
 	}
 
@@ -72,5 +75,9 @@ public class PlaylistSQLiteHelper extends SQLiteOpenHelper {
 
 		
 		onCreate(db);
+	}
+
+	@Override
+	public void onCreate(SQLiteDatabase database) {
 	}
 }	

@@ -57,12 +57,12 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 
 		setManager(new MusicManager(getApplicationContext()));
 
-		System.out.println("BEFORE LOAD");
 		loadPlaylists();
 		
 		if (MusicManager.getCurrentPlaylist().getPlaylist().size() > 0) {
 			MusicManager.setCurrentSong(MusicManager.getCurrentPlaylist().getPlaylist().get(0));
 			MusicManager.setCurrentAlbum(MusicManager.getAlbumFromSong(MusicManager.getCurrentSong()));
+			MusicManager.getCurrentPlaylist().setIndex(0);
 		}
 
 		mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -304,16 +304,21 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 	}
 
 	private void savePlaylists() {
-		getManager().open();
-
+		System.out.println("Beginning save");
 		MusicManager.getDbHelper().createTablesFromPlaylists(getManager().getDatabase());
+		System.out.println("Name table");
+
 		getManager().savePlaylistNames();
+		System.out.println("Saving names");
+		MusicManager.cleanCurrent(20);
 		getManager().createPlaylistInDB(MusicManager.getCurrentPlaylist());
+		System.out.println("saving current");
 
 		int i;
 		for (i = 0; i < MusicManager.getUserPlaylists().size(); i++)
 			getManager().createPlaylistInDB(MusicManager.getUserPlaylists().get(i));
 
+		System.out.println("Done");
 		getManager().close();
 	}
 
@@ -325,14 +330,15 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 			if (MusicManager.getPlaylistNames() != null) {
 				int i;
 				for (i = 0; i < MusicManager.getPlaylistNames().size(); i++) {
-					MusicManager.getUserPlaylists().add(getManager().createPlaylistFromDB(MusicManager.getPlaylistNames().get(i)));
+					if (MusicManager.isPlaylistExists(MusicManager.fetchPlaylist(MusicManager.getPlaylistNames().get(i)))) {
+						MusicManager.getUserPlaylists().set(i, getManager().createPlaylistFromDB(MusicManager.getPlaylistNames().get(i)));
+					}	
 				}
 			} 
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 		}
-
-		getManager().close();
+		MusicManager.getDbHelper().cleanUp(getManager().getDatabase());
 	}
 
 	public void restoreActionBar() {

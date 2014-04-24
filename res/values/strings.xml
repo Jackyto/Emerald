@@ -17,6 +17,7 @@
     <string name="allAlbum">All Albums</string>
     <string name="newPlaylistHint">Playlist name</string>
     <string name="newPlaylist">New playlist</string>
+    <string name="addToPlaylist">Add to playlist</string>
     <string name="title_playlist">Playlists</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

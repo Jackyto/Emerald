@@ -52,10 +52,14 @@ android.view.View.OnClickListener {
 			if (ed.getText() != null) {
 				p = new Playlist(new ArrayList<Song>(), 0, ed.getText().toString());
 				if (!MusicManager.isPlaylistExists(p)) {
-					p.getPlaylist().add(MainActivity.getManager().getSongList().get(0));
+					MusicManager.getPlaylistNames().add(p.getName());
 					MusicManager.getUserPlaylists().add(p);
 					Toast.makeText(c, "New playlist added : " + p.getName(), Toast.LENGTH_SHORT).show();
-				}
+
+					if (MainActivity.getFragmentIndex() == 4)
+						((MainActivity) c).changeView(MainActivity.getFragmentIndex());
+				} else
+					Toast.makeText(c, "Playlist already exists : " + p.getName(), Toast.LENGTH_SHORT).show();
 			}
 			dismiss();
 			break;

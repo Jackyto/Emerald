@@ -6,6 +6,7 @@ import com.emerald.R;
 import com.emerald.containers.Playlist;
 import com.emerald.containers.Song;
 import com.emerald.containers.SongListAdapter;
+import com.emerald.dialogs.SongDialog;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -84,9 +85,11 @@ public class SongFragment extends Fragment {
 		listView.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			@Override
-			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
+			public boolean onItemLongClick(AdapterView<?> adapter, View arg1,
+					int pos, long arg3) {
 				Toast.makeText(getActivity(), "caca", Toast.LENGTH_SHORT).show();
+				SongDialog sd = new SongDialog(getActivity(), (Song) adapter.getItemAtPosition(pos));
+				sd.show();
 				return true;
 			}
 		});

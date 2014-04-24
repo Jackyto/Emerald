@@ -59,7 +59,7 @@ public class ExpandableAlbumListAdapter extends BaseExpandableListAdapter {
 			@Override
 			public void onClick(View v) {
 		
-				MusicManager.setCurrentPlaylist(new Playlist(MainActivity.getManager().getSongListFromArtist(MusicManager.getCurrentArtist()), childPosition, "current"));
+				MusicManager.setCurrentPlaylist(new Playlist(MainActivity.getManager().getSongListFromArtist(MusicManager.getArtistFromSong(children)), childPosition, "current"));
 				MainActivity.setFromDrawer(false);
 				MusicManager.setCurrentSong(children);
 				MusicManager.setCurrentAlbum(groups.get(groupPosition).album);
