@@ -13,8 +13,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.CheckedTextView;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -91,7 +93,6 @@ public class ExpandablePlaylistAdapter extends BaseExpandableListAdapter {
 					public void onClick(DialogInterface dialog,int id) {
 						MusicManager.fetchPlaylist(groups.get(groupPosition).name).getPlaylist().remove(groups.get(groupPosition).children);
 						Toast.makeText(activity, groups.get(groupPosition).name + " deleted", Toast.LENGTH_SHORT).show();
-						groups.get(groupPosition).children.remove(childPosition);
 						((MainActivity) activity).changeView(MainActivity.getFragmentIndex());			
 					}
 				})
@@ -135,52 +136,59 @@ public class ExpandablePlaylistAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getGroupView(final int groupPosition, boolean isExpanded,
 			View convertView, ViewGroup parent) {
-		if (convertView == null) {
-			convertView = inflater.inflate(R.layout.playlist_listrow_group, null);
-		}
+
+		convertView = inflater.inflate(R.layout.playlist_listrow_group, null);
+		View v = inflater.inflate(R.layout.exp_playlist_frag, null); 
+		ExpandableListView elv = (ExpandableListView) v.findViewById(R.id.playlistView);
 		PlaylistGroup group = (PlaylistGroup) getGroup(groupPosition);
 
-		CheckedTextView ctv = (CheckedTextView) convertView.findViewById(R.id.expPlaylistLabel);
+		TextView ctv = (TextView) convertView.findViewById(R.id.expPlaylistLabel);
 		ctv.setText(group.name);
-		ctv.setChecked(isExpanded);
 
 		TextView	tv = (TextView) convertView.findViewById(R.id.expNbSongs);
 		tv.setText(group.children.size() + " song(s)");
-		convertView.setOnLongClickListener(new OnLongClickListener() {
+
+		elv.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			@Override
-			public boolean onLongClick(View v) {
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+					// Your code with group long click 
 
-				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-						activity);
+					AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+							activity);
 
-				// set title
-				// set dialog message
-				alertDialogBuilder
-				.setMessage("Do you really want to delete " + groups.get(groupPosition).name + " ?")
-				.setCancelable(false)
-				.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,int id) {
-						MusicManager.getPlaylistNames().remove(groups.get(groupPosition).name);
-						MusicManager.getUserPlaylists().remove(groups.get(groupPosition));
-						Toast.makeText(activity, groups.get(groupPosition).name + " deleted", Toast.LENGTH_SHORT).show();
-						groups.remove(groupPosition);
-						((MainActivity) activity).changeView(MainActivity.getFragmentIndex());			
-					}
-				})
-				.setNegativeButton("No",new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,int id) {
-						dialog.cancel();
-					}
-				});
+					// set title
+					// set dialog message
+					alertDialogBuilder
+					.setMessage("Do you really want to delete " + groups.get(groupPosition).name + " ?")
+					.setCancelable(false)
+					.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,int id) {
+							MusicManager.getPlaylistNames().remove(groupPosition);
+							MusicManager.getUserPlaylists().remove(groupPosition);
+							Toast.makeText(activity, groups.get(groupPosition).name + " deleted", Toast.LENGTH_SHORT).show();
+							((MainActivity) activity).changeView(MainActivity.getFragmentIndex());			
+						}
+					})
+					.setNegativeButton("No",new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,int id) {
+							dialog.cancel();
+						}
+					});
 
-				AlertDialog alertDialog = alertDialogBuilder.create();
+					AlertDialog alertDialog = alertDialogBuilder.create();
 
-				alertDialog.show();
+					alertDialog.show();
 
-				return true;
+					return true;
+				}
+
+				return false;
 			}
 		});
+
 		return convertView;
 	}
 

@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/playlistLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/background_color_inv"
@@ -16,7 +17,7 @@
         android:padding="8dp"
         android:singleLine="true"
         android:textAlignment="textStart"
-        android:textColor="@drawable/text_selector_inv"
+        android:textColor="#000000"
         android:textSize="19sp" />
 
     <TextView
@@ -28,8 +29,7 @@
         android:layout_alignParentTop="true"
         android:gravity="center_vertical"
         android:padding="8dp"
-        android:textColor="@drawable/text_selector_inv"
-        android:textColorHint="@color/very_dark_green"
+        android:textColor="#000000"
         android:textSize="14sp" />
 
 </RelativeLayout>
