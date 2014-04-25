@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@drawable/background_color_inv"
     android:paddingLeft="30dp" >
 
     <CheckedTextView
@@ -15,7 +16,7 @@
         android:paddingTop="8dp"
         android:singleLine="true"
         android:textAlignment="textEnd"
-        android:textColor="@color/very_dark_green"
+        android:textColor="@drawable/text_selector_inv"
         android:textSize="18sp" />
 
     <ImageView

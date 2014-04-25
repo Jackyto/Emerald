@@ -1,6 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_color_inv"
+    android:padding="1dp" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,21 +15,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="1dp"
-            android:padding="8dp"
             android:ellipsize="end"
+            android:padding="8dp"
             android:singleLine="true"
-            android:textColor="@color/very_dark_green"
-            android:textSize="16sp" />
+            android:textColor="@drawable/text_selector_inv"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/nbSongLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="1dp"
-            android:padding="8dp"
             android:ellipsize="end"
+            android:padding="8dp"
             android:singleLine="true"
-            android:textColor="@color/very_dark_green"
+            android:textColor="@drawable/text_selector_inv"
             android:textSize="14sp" />
 
     </LinearLayout>

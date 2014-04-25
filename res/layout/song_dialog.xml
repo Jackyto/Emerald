@@ -9,17 +9,35 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/new_playlist_border"
-        android:padding="8dp"
+        android:padding="16dp"
         android:text="@string/addToPlaylist"
         android:textColor="@color/light_text"
-        android:textSize="18sp" />
+        android:textSize="20sp" />
 
+    <Button
+        android:id="@+id/newPlaylistButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/addToPlaylistLabel"
+        android:layout_margin="4dp"
+        android:background="@drawable/background_color_inv"
+        android:text="@string/newPlaylist"
+        android:textColor="@drawable/text_selector_inv" />
+    
     <ListView
         android:id="@+id/addPlaylistListview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/addToPlaylistLabel" >
-    </ListView>
+        android:layout_below="@+id/newPlaylistButton"
+        android:layout_margin="4dp"
+        android:divider="@color/light_text"
+        android:dividerHeight="1dp"
+        android:padding="8dp" >
 
+    </ListView>
+    
 </RelativeLayout>

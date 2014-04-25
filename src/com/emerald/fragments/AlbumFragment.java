@@ -1,6 +1,8 @@
 package com.emerald.fragments;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.emerald.MainActivity;
@@ -46,7 +48,15 @@ public class AlbumFragment extends Fragment {
 			ListView listView = (ListView) rootView.findViewById(R.id.album_list);
 
 			if (MainActivity.isFromDrawer()) {
-				adapter = new AlbumListAdapter(getActivity().getApplicationContext(), R.layout.album_row, MainActivity.getManager().getAlbumList());
+				List<Album> tmp = MainActivity.getManager().getAlbumList();
+				
+				Collections.sort(tmp, new Comparator<Album>() {
+					@Override
+					public int compare(final Album object1, final Album object2) {
+						return object1.getName().compareTo(object2.getName());
+					}
+				} );
+				adapter = new AlbumListAdapter(getActivity().getApplicationContext(), R.layout.album_row, tmp);
 				MainActivity.setFromDrawer(false);
 			} else {
 				if (MusicManager.getCurrentArtist() != null) {
@@ -89,7 +99,7 @@ public class AlbumFragment extends Fragment {
 			});
 		} else {
 			MainActivity.setFullAlbum(false);
-			
+
 			rootView = inflater.inflate(R.layout.exp_song_frag, container, false);
 
 			SparseArray<AlbumGroup> groups = new SparseArray<AlbumGroup>();

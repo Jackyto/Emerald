@@ -40,11 +40,11 @@
         android:layout_marginBottom="12dp"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
-        android:background="@color/light_text"
+        android:background="@drawable/background_color_inv"
         android:clickable="true"
         android:padding="8dp"
         android:text="@string/confirm"
-        android:textColor="@color/very_dark_green"
+        android:textColor="@drawable/text_selector_inv"
         android:textStyle="bold" />
 
     <Button
@@ -56,11 +56,11 @@
         android:layout_marginBottom="12dp"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
-        android:background="@color/light_text"
+        android:background="@drawable/background_color_inv"
         android:clickable="true"
         android:padding="8dp"
         android:text="@string/cancel"
-        android:textColor="@color/very_dark_green"
+        android:textColor="@drawable/text_selector_inv"
         android:textStyle="bold" />
 
 </RelativeLayout>

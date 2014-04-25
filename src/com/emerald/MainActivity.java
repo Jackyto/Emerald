@@ -304,21 +304,18 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 	}
 
 	private void savePlaylists() {
-		System.out.println("Beginning save");
+		getManager().open();
+
 		MusicManager.getDbHelper().createTablesFromPlaylists(getManager().getDatabase());
-		System.out.println("Name table");
 
 		getManager().savePlaylistNames();
-		System.out.println("Saving names");
 		MusicManager.cleanCurrent(20);
 		getManager().createPlaylistInDB(MusicManager.getCurrentPlaylist());
-		System.out.println("saving current");
 
 		int i;
 		for (i = 0; i < MusicManager.getUserPlaylists().size(); i++)
 			getManager().createPlaylistInDB(MusicManager.getUserPlaylists().get(i));
 
-		System.out.println("Done");
 		getManager().close();
 	}
 
@@ -339,6 +336,8 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 			System.out.println(e.getMessage());
 		}
 		MusicManager.getDbHelper().cleanUp(getManager().getDatabase());
+		getManager().close();
+
 	}
 
 	public void restoreActionBar() {

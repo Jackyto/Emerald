@@ -5,6 +5,8 @@ import com.emerald.MusicManager;
 import com.emerald.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,7 +52,7 @@ public class ExpandablePlaylistAdapter extends BaseExpandableListAdapter {
 		if (convertView == null) {
 			convertView = inflater.inflate(R.layout.playlist_listrow_details, null);
 		}
-		
+
 		ImageView iv = (ImageView) convertView.findViewById(R.id.expPlaylistAlbumArt);
 		textSong = (TextView) convertView.findViewById(R.id.expPlaylistSongLabel);
 		textArtist = (TextView) convertView.findViewById(R.id.expPlaylistArtistLabel);
@@ -60,12 +62,12 @@ public class ExpandablePlaylistAdapter extends BaseExpandableListAdapter {
 		textSong.setText(children.getTitle());
 		textArtist.setText(children.getArtist());
 		textDuration.setText(MusicManager.getUtils().milliSecondsToClock(children.getDuration()));
-		
+
 		convertView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				MusicManager.setCurrentPlaylist(new Playlist(groups.get(groupPosition).children, 0, "current"));
-				
+
 				MainActivity.setFromDrawer(false);
 				MusicManager.setCurrentSong(children);
 				((MainActivity) activity).play();
@@ -73,13 +75,36 @@ public class ExpandablePlaylistAdapter extends BaseExpandableListAdapter {
 			}
 		});
 		convertView.setOnLongClickListener(new OnLongClickListener() {
-			
+
 			@Override
 			public boolean onLongClick(View v) {
-				MusicManager.getCurrentPlaylist().getPlaylist().remove(groups.get(groupPosition).children);
-				Toast.makeText(activity, groups.get(groupPosition).name + " deleted", Toast.LENGTH_SHORT).show();
-				groups.get(groupPosition).children.remove(childPosition);
-				((MainActivity) activity).changeView(MainActivity.getFragmentIndex());
+
+				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+						activity);
+
+				// set title
+				// set dialog message
+				alertDialogBuilder
+				.setMessage("Do you really want to delete " + groups.get(groupPosition).children.get(childPosition).getTitle() + " ?")
+				.setCancelable(false)
+				.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,int id) {
+						MusicManager.fetchPlaylist(groups.get(groupPosition).name).getPlaylist().remove(groups.get(groupPosition).children);
+						Toast.makeText(activity, groups.get(groupPosition).name + " deleted", Toast.LENGTH_SHORT).show();
+						groups.get(groupPosition).children.remove(childPosition);
+						((MainActivity) activity).changeView(MainActivity.getFragmentIndex());			
+					}
+				})
+				.setNegativeButton("No",new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,int id) {
+						dialog.cancel();
+					}
+				});
+
+				AlertDialog alertDialog = alertDialogBuilder.create();
+
+				alertDialog.show();
+
 				return true;
 			}
 		});
@@ -88,7 +113,7 @@ public class ExpandablePlaylistAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public int getChildrenCount(int groupPosition) {
-			return groups.get(groupPosition).children.size();
+		return groups.get(groupPosition).children.size();
 	}
 
 	@Override
@@ -114,14 +139,48 @@ public class ExpandablePlaylistAdapter extends BaseExpandableListAdapter {
 			convertView = inflater.inflate(R.layout.playlist_listrow_group, null);
 		}
 		PlaylistGroup group = (PlaylistGroup) getGroup(groupPosition);
-		
+
 		CheckedTextView ctv = (CheckedTextView) convertView.findViewById(R.id.expPlaylistLabel);
 		ctv.setText(group.name);
 		ctv.setChecked(isExpanded);
-		
+
 		TextView	tv = (TextView) convertView.findViewById(R.id.expNbSongs);
 		tv.setText(group.children.size() + " song(s)");
+		convertView.setOnLongClickListener(new OnLongClickListener() {
 
+			@Override
+			public boolean onLongClick(View v) {
+
+				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+						activity);
+
+				// set title
+				// set dialog message
+				alertDialogBuilder
+				.setMessage("Do you really want to delete " + groups.get(groupPosition).name + " ?")
+				.setCancelable(false)
+				.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,int id) {
+						MusicManager.getPlaylistNames().remove(groups.get(groupPosition).name);
+						MusicManager.getUserPlaylists().remove(groups.get(groupPosition));
+						Toast.makeText(activity, groups.get(groupPosition).name + " deleted", Toast.LENGTH_SHORT).show();
+						groups.remove(groupPosition);
+						((MainActivity) activity).changeView(MainActivity.getFragmentIndex());			
+					}
+				})
+				.setNegativeButton("No",new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,int id) {
+						dialog.cancel();
+					}
+				});
+
+				AlertDialog alertDialog = alertDialogBuilder.create();
+
+				alertDialog.show();
+
+				return true;
+			}
+		});
 		return convertView;
 	}
 

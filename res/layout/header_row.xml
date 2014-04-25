@@ -6,8 +6,8 @@
     android:layout_marginBottom="16dp"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
-    android:background="@color/light_text"
+    android:background="@drawable/background_color_inv"
     android:padding="12dp"
-    android:textColor="@color/very_dark_green"
+    android:textColor="@drawable/text_selector_inv"
     android:textSize="20sp" />
 

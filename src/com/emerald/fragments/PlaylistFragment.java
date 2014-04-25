@@ -45,7 +45,7 @@ public class PlaylistFragment extends Fragment implements OnItemClickListener, O
 		header = inflater.inflate(R.layout.header_row, null);
 
 		TextView label = (TextView) header.findViewById(R.id.label);
-		label.setText("New playlist");
+		label.setText(R.string.newPlaylist);
 		
 		for (int i = 0; i < MusicManager.getUserPlaylists().size(); i++) {
 			PlaylistGroup pg = new PlaylistGroup(MusicManager.getUserPlaylists().get(i).getName());
@@ -71,7 +71,7 @@ public class PlaylistFragment extends Fragment implements OnItemClickListener, O
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
 			long arg3) {
 		if (pos == 0) {
-			NewPlaylistDialog cdd=new NewPlaylistDialog(getActivity());
+			NewPlaylistDialog cdd=new NewPlaylistDialog(getActivity(), null);
 			cdd.show();
 		} else {
 		}

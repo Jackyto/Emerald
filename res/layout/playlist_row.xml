@@ -1,0 +1,28 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_color" >
+
+    <TextView
+        android:id="@+id/playlistRowLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/playlistRowNbSong"
+        android:padding="8dp"
+        android:textColor="@drawable/text_selector"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/playlistRowNbSong"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:gravity="bottom"
+        android:padding="8dp"
+        android:textColor="@drawable/text_selector"
+        android:textSize="14sp" />
+
+</RelativeLayout>

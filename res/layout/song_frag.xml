@@ -13,10 +13,10 @@
         android:layout_height="wrap_content"
         android:background="@color/light_text"
         android:cacheColorHint="#ff00ff00"
+        android:fastScrollEnabled="true"
         android:longClickable="true"
         android:padding="4dp"
         android:scrollbars="none" >
-
     </ListView>
 
 </RelativeLayout>

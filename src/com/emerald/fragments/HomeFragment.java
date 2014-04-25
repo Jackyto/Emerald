@@ -10,7 +10,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -29,6 +31,7 @@ public class HomeFragment extends Fragment implements OnSeekBarChangeListener {
 	private TextView			idAlbum;
 	private TextView			idDuration;
 	private ImageView			iv;
+	private Button				butArtist, butAlbum, butPlaylist, butSong;
 
 	public static HomeFragment newInstance() {
 		HomeFragment fragment = new HomeFragment();
@@ -57,7 +60,45 @@ public class HomeFragment extends Fragment implements OnSeekBarChangeListener {
 		idDuration = (TextView) rootView.findViewById(R.id.idSongDuration);
 		iv = (ImageView) rootView.findViewById(R.id.idAlbumArt);
 
-
+		butArtist = (Button) rootView.findViewById(R.id.artistButton);
+		butAlbum = (Button) rootView.findViewById(R.id.albumButton);
+		butPlaylist = (Button) rootView.findViewById(R.id.playlistButton);
+		butSong = (Button) rootView.findViewById(R.id.songsButton);
+		
+		
+		
+		butArtist.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				((MainActivity) getActivity()).changeView(1);
+			}
+		});
+		
+		butAlbum.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (MusicManager.getCurrentArtist() == null)
+					MainActivity.setFromDrawer(true);
+				((MainActivity) getActivity()).changeView(2);
+			}
+		});
+		
+		butPlaylist.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				((MainActivity) getActivity()).changeView(4);
+			}
+		});
+		
+		butSong.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (MusicManager.getCurrentAlbum() == null)
+					MainActivity.setFromDrawer(true);
+				((MainActivity) getActivity()).changeView(3);
+			}
+		});
+		
 		if (MusicManager.getCurrentSong() != null) {
 			MainActivity.getManager();
 

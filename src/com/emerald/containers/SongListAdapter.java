@@ -34,7 +34,8 @@ public class SongListAdapter extends ArrayAdapter<Song> {
 			LayoutInflater vi;
 			vi = LayoutInflater.from(getContext());
 			v = vi.inflate(R.layout.song_row, null);
-		}
+		} else
+			v = convertView;
 
 		Song p = getItem(position);
 
@@ -62,4 +63,5 @@ public class SongListAdapter extends ArrayAdapter<Song> {
 
 		return v;
 	}
+
 }

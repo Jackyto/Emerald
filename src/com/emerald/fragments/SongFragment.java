@@ -1,5 +1,9 @@
 package com.emerald.fragments;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import com.emerald.MainActivity;
 import com.emerald.MusicManager;
 import com.emerald.R;
@@ -17,7 +21,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class SongFragment extends Fragment {
 
@@ -42,7 +45,16 @@ public class SongFragment extends Fragment {
 
 		SongListAdapter adapter = null;
 		if (MainActivity.isFromDrawer()) {
-			adapter = new SongListAdapter(getActivity().getApplicationContext(), R.layout.song_row, MainActivity.getManager().getSongList());
+			List<Song> tmp = MainActivity.getManager().getSongList();
+			
+			Collections.sort(tmp, new Comparator<Song>() {
+				@Override
+				public int compare(final Song object1, final Song object2) {
+					return object1.getTitle().compareTo(object2.getTitle());
+				}
+			} );
+			
+			adapter = new SongListAdapter(getActivity().getApplicationContext(), R.layout.song_row, tmp);
 		}
 		else {
 			if (MusicManager.getCurrentAlbum() != null) {
@@ -87,7 +99,6 @@ public class SongFragment extends Fragment {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapter, View arg1,
 					int pos, long arg3) {
-				Toast.makeText(getActivity(), "caca", Toast.LENGTH_SHORT).show();
 				SongDialog sd = new SongDialog(getActivity(), (Song) adapter.getItemAtPosition(pos));
 				sd.show();
 				return true;

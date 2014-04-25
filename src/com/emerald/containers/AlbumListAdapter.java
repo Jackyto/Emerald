@@ -31,7 +31,8 @@ public class AlbumListAdapter extends ArrayAdapter<Album> {
 			LayoutInflater vi;
 			vi = LayoutInflater.from(getContext());
 			v = vi.inflate(R.layout.album_row, null);
-		}
+		} else
+			v = convertView;
 
 		Album p = getItem(position);
 
