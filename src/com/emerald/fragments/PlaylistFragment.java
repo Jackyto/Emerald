@@ -2,7 +2,9 @@ package com.emerald.fragments;
 
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -74,15 +76,37 @@ public class PlaylistFragment extends Fragment implements OnItemLongClickListene
 	}
 
 	@Override
-	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,
+	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, final int arg2,
 			long arg3) {
-		String toToast = MusicManager.getPlaylistNames().get(arg2 - 1);
-		MusicManager.getPlaylistNames().remove(arg2 - 1);
-		MusicManager.getUserPlaylists().remove(arg2 - 1);
-		Toast.makeText(getActivity(), toToast + " deleted", Toast.LENGTH_SHORT).show();
-		((MainActivity) getActivity()).changeView(MainActivity.getFragmentIndex());
+
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+				getActivity());
+
+		// set title
+		// set dialog message
+		alertDialogBuilder
+		.setMessage("Do you really want to delete " + groups.get(arg2).name + " ?")
+		.setCancelable(false)
+		.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				String toToast = MusicManager.getPlaylistNames().get(arg2);
+				MusicManager.getPlaylistNames().remove(arg2);
+				MusicManager.getUserPlaylists().remove(arg2);
+				Toast.makeText(getActivity(), toToast + " deleted", Toast.LENGTH_SHORT).show();
+				((MainActivity) getActivity()).changeView(MainActivity.getFragmentIndex());			
+			}
+		})
+		.setNegativeButton("No",new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				dialog.cancel();
+			}
+		});
+
+		AlertDialog alertDialog = alertDialogBuilder.create();
+
+		alertDialog.show();
+
 		return true;
 	}
-
 }
 

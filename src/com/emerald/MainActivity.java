@@ -58,7 +58,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 		setManager(new MusicManager(getApplicationContext()));
 
 		loadPlaylists();
-		
+
 		if (MusicManager.getCurrentPlaylist().getPlaylist().size() > 0) {
 			MusicManager.setCurrentSong(MusicManager.getCurrentPlaylist().getPlaylist().get(0));
 			MusicManager.setCurrentAlbum(MusicManager.getAlbumFromSong(MusicManager.getCurrentSong()));
@@ -92,10 +92,12 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if (MusicService.isPlaying())
-					pause();
-				else
-					resume();
+				if (MusicManager.getCurrentSong() != null) {
+					if (MusicService.isPlaying())
+						pause();
+					else
+						resume();
+				}
 			}
 		});
 
@@ -103,8 +105,8 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				next();
+				if (MusicManager.getCurrentPlaylist().getPlaylist().size() > 0)
+					next();
 			}
 		});
 
@@ -112,8 +114,8 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				prev();
+				if (MusicManager.getCurrentPlaylist().getPlaylist().size() > 0)
+					prev();
 			}
 		});
 
@@ -168,6 +170,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 	public void	play() {
 		songLabel.setText(MusicManager.getCurrentSong().getTitle() + " by " + MusicManager.getCurrentSong().getArtist());
 		playButton.setImageResource(android.R.drawable.ic_media_pause);
+
 		mService.play();
 		mService.getPlayer().setOnCompletionListener(this);
 	}
@@ -186,6 +189,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 	@Override
 	public void onCompletion(MediaPlayer mp) {
 		mService.setPlayer(mp);
+		mService.stop();
 		next();
 	}
 

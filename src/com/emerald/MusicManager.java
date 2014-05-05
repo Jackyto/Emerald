@@ -131,8 +131,8 @@ public class MusicManager implements Serializable{
 	public void createPlaylistInDB(Playlist p) {
 		System.out.println(p.getName());
 		if (p.getPlaylist() != null) {
-
-			for (i = 0; i < p.getPlaylist().size(); i++) {
+			int k;
+			for (k = 0, i = p.getIndex(); k < p.getPlaylist().size(); k++, i++) {
 
 				ContentValues values = new ContentValues();
 
@@ -144,6 +144,9 @@ public class MusicManager implements Serializable{
 
 				String table = p.getName();
 				database.insert(table, null, values);	
+
+				if (i + 1 == p.getPlaylist().size())
+					i = -1;
 			}
 		}
 	}

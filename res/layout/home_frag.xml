@@ -15,6 +15,7 @@
         android:layout_alignLeft="@+id/songLayout"
         android:layout_alignRight="@+id/songLayout"
         android:layout_below="@+id/songLayout"
+        android:layout_marginTop="12dp"
         android:background="@color/light_text"
         android:padding="8dp" >
 
@@ -120,10 +121,9 @@
         android:id="@+id/navigation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/seekLayout"
-        android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/seekLayout"
-        android:layout_marginBottom="112dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/seekLayout"
+        android:layout_marginTop="12dp"
         android:background="@color/light_text"
         android:padding="8dp" >
 

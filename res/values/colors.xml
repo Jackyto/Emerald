@@ -2,6 +2,6 @@
 <resources>
     <color name="green">#007200</color>
     <color name="dark_green">#005500</color>
-    <color name="light_text">#FEFEE2</color>
+    <color name="light_text">#FFFFFF</color>
     <color name="very_dark_green">#003700</color>
 </resources>
