@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -287,7 +289,7 @@ public class MusicManager implements Serializable{
 
 		Cursor 		cursor = context.getContentResolver().query(
 				MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-				projection, selection, null, null);
+				projection, selection, null, MediaStore.Audio.Media.TITLE);
 
 		Song 		tmp = null;
 
@@ -302,7 +304,11 @@ public class MusicManager implements Serializable{
 						cursor.getString(5),
 						cursor.getInt(6));
 
-				songList.add(tmp);
+				if (!Pattern.compile(Pattern.quote("Notifications"), Pattern.CASE_INSENSITIVE).matcher(tmp.getPath()).find()
+						&& !Pattern.compile(Pattern.quote("Ringtones"), Pattern.CASE_INSENSITIVE).matcher(tmp.getPath()).find()
+						&& !Pattern.compile(Pattern.quote("Sounds"), Pattern.CASE_INSENSITIVE).matcher(tmp.getPath()).find())
+					songList.add(tmp);
+
 			} while (cursor.moveToNext());
 		}
 		cursor.close();

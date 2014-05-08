@@ -3,8 +3,7 @@
     android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/background_color_inv"
-    android:orientation="vertical" >
+    android:background="@drawable/background_color_inv" >
 
     <TextView
         android:id="@+id/songLabel"

@@ -9,9 +9,11 @@ import com.emerald.fragments.SongFragment;
 import android.app.Activity;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.SQLException;
@@ -189,7 +191,6 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 	@Override
 	public void onCompletion(MediaPlayer mp) {
 		mService.setPlayer(mp);
-		mService.stop();
 		next();
 	}
 
@@ -266,7 +267,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 			if (MusicManager.getCurrentAlbum() == null
 			|| isFromDrawer())
 				mTitle = getString(R.string.title_songs);
-			else
+			 else
 				mTitle = MusicManager.getCurrentAlbum().getName();
 			fragmentManager.beginTransaction()
 			.replace(R.id.container, SongFragment.newInstance())
@@ -296,12 +297,35 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 			changeView(0);
 		else {
 			fragmentIndex--;
+			if (MusicManager.getCurrentAlbum() == null && fragmentIndex == 2) {
+				fragmentIndex = 1;
+			}
 			if (fragmentIndex < 0) {
-				savePlaylists();
-				if (mService != null)
-					mService.stop();
-				unbindService(mConnection);
-				finish();
+
+				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+				alertDialogBuilder
+				.setMessage("Do you really want to quit Emerald ?")
+				.setCancelable(false)
+				.setPositiveButton("Run in background",new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,int id) {
+						moveTaskToBack(true); 
+					}
+				})
+				.setNegativeButton("Quit",new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,int id) {
+						savePlaylists();
+						if (mService != null)
+							mService.stop();
+						unbindService(mConnection);
+						finish();
+					}
+				});
+
+				AlertDialog alertDialog = alertDialogBuilder.create();
+				alertDialog.setCanceledOnTouchOutside(true);
+				alertDialog.show();
+				
 			} else
 				changeView(fragmentIndex);
 		}

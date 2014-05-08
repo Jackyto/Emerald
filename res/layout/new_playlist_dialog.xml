@@ -3,8 +3,7 @@
     android:id="@+id/RelativeLayout1"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/new_playlist_border"
-    android:orientation="vertical" >
+    android:background="@drawable/new_playlist_border">
 
     <TextView
         android:id="@+id/expPlaylistArtistLabel"
@@ -22,8 +21,8 @@
         android:id="@+id/playlistLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignLeft="@+id/btn_yes"
+        android:layout_alignRight="@+id/btn_no"
         android:layout_below="@+id/expPlaylistArtistLabel"
         android:layout_margin="16dp"
         android:background="@color/light_text"
@@ -32,34 +31,31 @@
         android:padding="8dp" />
 
     <Button
-        android:id="@+id/btn_yes"
-        android:layout_width="100dp"
-        android:layout_height="48dp"
-        android:layout_alignLeft="@+id/playlistLabel"
-        android:layout_below="@+id/playlistLabel"
-        android:layout_marginBottom="12dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:background="@drawable/background_color_inv"
-        android:clickable="true"
-        android:padding="8dp"
-        android:text="@string/confirm"
-        android:textColor="@drawable/text_selector_inv"
-        android:textStyle="bold" />
-
-    <Button
         android:id="@+id/btn_no"
         android:layout_width="100dp"
         android:layout_height="48dp"
-        android:layout_alignRight="@+id/playlistLabel"
-        android:layout_below="@+id/playlistLabel"
-        android:layout_marginBottom="12dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
+        android:layout_alignBaseline="@+id/btn_yes"
+        android:layout_alignBottom="@+id/btn_yes"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="24dp"
         android:background="@drawable/background_color_inv"
         android:clickable="true"
         android:padding="8dp"
         android:text="@string/cancel"
+        android:textColor="@drawable/text_selector_inv"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btn_yes"
+        android:layout_width="100dp"
+        android:layout_height="48dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/playlistLabel"
+        android:layout_marginLeft="24dp"
+        android:background="@drawable/background_color_inv"
+        android:clickable="true"
+        android:padding="8dp"
+        android:text="@string/confirm"
         android:textColor="@drawable/text_selector_inv"
         android:textStyle="bold" />
 

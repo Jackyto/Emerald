@@ -25,19 +25,14 @@ public class AlbumListAdapter extends ArrayAdapter<Album> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View v = convertView;
 
-		if (v == null) {
-			LayoutInflater vi;
-			vi = LayoutInflater.from(getContext());
-			v = vi.inflate(R.layout.album_row, null);
-		} else
-			v = convertView;
+		LayoutInflater inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View v = inflater.inflate(R.layout.album_row, parent, false);
 
 		Album p = getItem(position);
 
 		if (p != null) {
-			
+
 			ImageView	iv = (ImageView) v.findViewById(R.id.albumArt);
 			iv.setImageBitmap(p.getArt());
 
@@ -48,7 +43,6 @@ public class AlbumListAdapter extends ArrayAdapter<Album> {
 				tt.setText(p.getName());
 			}
 			if (tt1 != null) {
-
 				tt1.setText(p.getNbSong() + " Song(s)");
 			}
 

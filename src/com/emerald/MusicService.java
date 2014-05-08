@@ -55,27 +55,31 @@ public class MusicService extends Service {
 		}
 	}
 
+	public void showNotif() {
+		Intent intent = new Intent(this, MainActivity.class);
+
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
+				Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+		PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
+		Bitmap b = MusicManager.getAlbumFromSong(MusicManager.getCurrentSong()).getArt();
+		Bitmap.createScaledBitmap(b, 128, 128, false);
+		Notification notification = new NotificationCompat.Builder(getApplicationContext())
+
+		.setContentTitle("Emerald")
+		.setContentText("Now Playing: " + MusicManager.getCurrentSong().getTitle())
+		.setLargeIcon(b)
+		.setSmallIcon(R.drawable.ic_launcher)
+		.setContentIntent(pi)
+		.build();
+		
+		startForeground(classID, notification);
+	}
+	
 	public void play() {
 		if (!isPlaying) {
 			isPlaying = true;
-			Intent intent = new Intent(this, MainActivity.class);
-
-			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
-					Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-			PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
-			Bitmap b = MusicManager.getAlbumFromSong(MusicManager.getCurrentSong()).getArt();
-			Bitmap.createScaledBitmap(b, 128, 128, false);
-			Notification notification = new NotificationCompat.Builder(getApplicationContext())
-
-			.setContentTitle("Emerald")
-			.setContentText("Now Playing: " + MusicManager.getCurrentSong().getTitle())
-			.setLargeIcon(b)
-			.setSmallIcon(R.drawable.ic_launcher)
-			.setContentIntent(pi)
-			.build();
-			
-			startForeground(classID, notification);
+			showNotif();
 
 			Uri songUri = Uri.parse(MusicManager.getCurrentSong().getPath());
 			player = MediaPlayer.create(this, songUri);
@@ -90,6 +94,7 @@ public class MusicService extends Service {
 	public void pause() {
 		if (isPlaying) {
 			isPlaying = false;
+			stopForeground(true);
 			player.pause();
 		}
 	}
@@ -98,24 +103,7 @@ public class MusicService extends Service {
 		if (!isPlaying) {
 			isPlaying = true;
 			
-			Intent intent = new Intent(this, MainActivity.class);
-
-			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
-					Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-			PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
-			Bitmap b = MusicManager.getAlbumFromSong(MusicManager.getCurrentSong()).getArt();
-			
-			Notification notification = new NotificationCompat.Builder(getApplicationContext())
-
-			.setContentTitle("Emerald")
-			.setContentText("Now Playing: " + MusicManager.getCurrentSong().getTitle())
-			.setLargeIcon(b)
-			.setSmallIcon(R.drawable.ic_launcher)
-			.setContentIntent(pi)
-			.build();
-			
-			startForeground(classID, notification);
+			showNotif();
 			player.start();
 		}
 	}
@@ -123,7 +111,7 @@ public class MusicService extends Service {
 	public void stop() {
 		if (isPlaying) {
 			isPlaying = false;
-			stopForeground(false);
+			stopForeground(true);
 			pause();
 		}
 		if (player != null) {

@@ -19,19 +19,6 @@
         android:layout_toRightOf="@+id/expPlaylistAlbumArt"
         android:background="@android:color/black" />
 
-    <TextView
-        android:id="@+id/expPlaylistSongDuration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:padding="8dp"
-        android:singleLine="true"
-        android:textColor="@drawable/text_selector_inv"
-        android:textSize="12sp" />
-
     <ImageView
         android:id="@+id/expPlaylistAlbumArt"
         android:layout_width="48dp"
@@ -50,8 +37,8 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/expPlaylistAlbumArt"
         android:layout_alignLeft="@+id/expPlaylistArtistLabel"
-        android:layout_alignRight="@+id/expPlaylistSongDuration"
         android:layout_marginLeft="8dp"
+        android:layout_toLeftOf="@+id/expPlaylistSongDuration"
         android:ellipsize="end"
         android:padding="4dp"
         android:singleLine="true"
@@ -64,8 +51,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/expPlaylistSongLabel"
-        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/expPlaylistSongDuration"
         android:layout_marginLeft="8dp"
         android:layout_toRightOf="@+id/expPlaylistAlbumArt"
         android:ellipsize="end"
@@ -74,5 +61,19 @@
         android:textAlignment="textEnd"
         android:textColor="@drawable/text_selector_inv"
         android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/expPlaylistSongDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/expPlaylistSongLabel"
+        android:layout_alignBottom="@+id/expPlaylistSongLabel"
+        android:layout_alignRight="@+id/View1"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:padding="8dp"
+        android:singleLine="true"
+        android:textColor="@drawable/text_selector_inv"
+        android:textSize="12sp" />
 
 </RelativeLayout>

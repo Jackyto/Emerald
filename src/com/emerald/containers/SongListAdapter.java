@@ -28,32 +28,32 @@ public class SongListAdapter extends ArrayAdapter<Song> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+
 		View v = convertView;
 
 		if (v == null) {
 			LayoutInflater vi;
 			vi = LayoutInflater.from(getContext());
 			v = vi.inflate(R.layout.song_row, null);
-		} else
-			v = convertView;
+		}
 
 		Song p = getItem(position);
 
 		if (p != null) {
 			Utilities utils = new Utilities(); 
-			
+
 			ImageView	iv = (ImageView) v.findViewById(R.id.songArt);
-			
+
 			if (MusicManager.getAlbumFromSong(p).getArt() != null)
-			iv.setImageBitmap(MusicManager.getAlbumFromSong(p).getArt());
-			
+				iv.setImageBitmap(MusicManager.getAlbumFromSong(p).getArt());
+
 			TextView tt = (TextView) v.findViewById(R.id.songLabel);
 			TextView tt1 = (TextView) v.findViewById(R.id.songDuration);
 			TextView tt2 = (TextView) v.findViewById(R.id.songArtist);
-			
+
 			if (tt != null) 
 				tt.setText(p.getTitle());
-			
+
 			if (tt1 != null) 
 				tt1.setText(utils.milliSecondsToClock(p.getDuration()));
 
@@ -62,6 +62,18 @@ public class SongListAdapter extends ArrayAdapter<Song> {
 		}
 
 		return v;
+	}
+
+	@Override
+	public long getItemId(int position) {
+		// TODO Auto-generated method stub
+		return position;
+	}
+
+	@Override
+	public Song getItem(int position) {
+		// TODO Auto-generated method stub
+		return super.getItem(position);
 	}
 
 }

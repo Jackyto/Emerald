@@ -44,6 +44,13 @@ public class ArtistFragment extends Fragment {
 				// TODO Auto-generated method stub
 				MainActivity.setFromDrawer(false);
 				MusicManager.setCurrentArtist((Artist) adapter.getItemAtPosition(pos));
+				
+				if (MainActivity.getManager().getAlbumListFromArtist(MusicManager.getCurrentArtist()).size() < 1) {
+					MusicManager.setCurrentAlbum(null);
+					MainActivity.setFragmentIndex(2);
+					((MainActivity) getActivity()).changeView(MainActivity.getFragmentIndex());
+				}
+
 				((MainActivity) getActivity()).changeView(MainActivity.getFragmentIndex() + 1);
 			}
 		});
