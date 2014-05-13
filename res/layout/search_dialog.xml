@@ -1,0 +1,18 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/very_dark_green" >
+
+    <com.emerald.autocomplete.CustomAutoCompleteView
+        android:id="@+id/searchView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="16dp"
+        android:background="@color/light_text"
+        android:focusable="true"
+        android:padding="16dp" >
+    </com.emerald.autocomplete.CustomAutoCompleteView>
+
+</RelativeLayout>

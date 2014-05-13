@@ -8,7 +8,9 @@
     <string name="title_songs">Songs</string>
     <string name="desc_album_art">Album art</string>
     <string name="desc_button_player">Player button</string>
-    <string name="none">N/A</string>
+	<string name="desc_button_add">Add to playlist button</string>
+	<string name="desc_button_search">Search for song</string>
+	<string name="none">N/A</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="confirm">Confirm</string>

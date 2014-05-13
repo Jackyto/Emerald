@@ -68,8 +68,10 @@ public class ExpandablePlaylistAdapter extends BaseExpandableListAdapter {
 		convertView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				MusicManager.setCurrentPlaylist(new Playlist(groups.get(groupPosition).children, 0, "current"));
+				MusicManager.setCurrentPlaylist(new Playlist(groups.get(groupPosition).children, childPosition, "current"));
 
+				System.out.println(MusicManager.getCurrentPlaylist().getPlaylist().size() + " size current");
+				
 				MainActivity.setFromDrawer(false);
 				MusicManager.setCurrentSong(children);
 				((MainActivity) activity).play();

@@ -40,6 +40,8 @@ public class MusicManager implements Serializable{
 	private static List<Album>				albumList;
 	private static List<Song>				songList;
 
+	private static List<Song>				searchList;
+	
 	private static Playlist					currentPlaylist;
 	private static List<Playlist>			userPlaylists;
 	private static List<String>				playlistNames;
@@ -76,7 +78,7 @@ public class MusicManager implements Serializable{
 		setSongList(new ArrayList<Song>());
 		setUserPlaylists(new ArrayList<Playlist>());
 		setPlaylistNames(new ArrayList<String>());
-
+		setSearchList(new ArrayList<Song>());
 		setCurrentPlaylist(new Playlist(new ArrayList<Song>(), 0, CURRENT));
 
 		setDbHelper(new PlaylistSQLiteHelper(context));
@@ -405,6 +407,13 @@ public class MusicManager implements Serializable{
 		return null;
 	}
 
+	public static void generateSearchList(CharSequence userInput) {
+		searchList.clear();
+		for (i = 0; i < songList.size(); i++) {
+			if (Pattern.compile(Pattern.quote(userInput.toString()), Pattern.CASE_INSENSITIVE).matcher(songList.get(i).getTitle()).find())
+				searchList.add(songList.get(i));
+		}
+	}
 	public List<Artist> getArtistList() {
 		return artistList;
 	}
@@ -500,5 +509,14 @@ public class MusicManager implements Serializable{
 	public void setDatabase(SQLiteDatabase database) {
 		this.database = database;
 	}
+
+	public static List<Song> getSearchList() {
+		return searchList;
+	}
+
+	public static void setSearchList(List<Song> searchList) {
+		MusicManager.searchList = searchList;
+	}
+
 
 }

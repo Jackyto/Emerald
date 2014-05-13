@@ -1,5 +1,7 @@
 package com.emerald;
 
+import com.emerald.dialogs.SearchDialog;
+import com.emerald.dialogs.SongDialog;
 import com.emerald.fragments.AlbumFragment;
 import com.emerald.fragments.ArtistFragment;
 import com.emerald.fragments.HomeFragment;
@@ -49,13 +51,16 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 	private static boolean		fullAlbum = false;
 	private static int			fragmentIndex = 0;
 
-	private ImageButton			playButton, nextButton, prevButton;
+	private ImageButton			playButton, nextButton, prevButton, addButton, searchButton;
 	private TextView			songLabel;
+	private Activity			act;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		act = this;
 
 		setManager(new MusicManager(getApplicationContext()));
 
@@ -82,7 +87,8 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 		playButton = (ImageButton) findViewById(R.id.playButton);
 		nextButton = (ImageButton) findViewById(R.id.nextButton);
 		prevButton = (ImageButton) findViewById(R.id.prevButton);
-
+		addButton = (ImageButton) findViewById(R.id.addButton);
+		searchButton = (ImageButton) findViewById(R.id.searchButton);
 		songLabel = (TextView) findViewById(R.id.songLabel);
 
 		if (MusicManager.getCurrentSong() != null) 
@@ -121,6 +127,28 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 			}
 		});
 
+		addButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (MusicManager.getCurrentSong() != null) {
+					SongDialog sd = new SongDialog(act, MusicManager.getCurrentSong());
+					sd.show();
+				}
+			}
+
+		});
+		
+		searchButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				SearchDialog sd = new SearchDialog(act);
+				sd.show();
+			}
+			
+		});
+		
 	}
 
 	public void next() {
@@ -129,7 +157,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 			MusicManager.getCurrentPlaylist().setIndex(0);
 
 		MusicManager.setCurrentSong(MusicManager.getCurrentPlaylist().getPlaylist().get(MusicManager.getCurrentPlaylist().getIndex()));
-
+		
 		mService.next();
 		songLabel.setText(MusicManager.getCurrentSong().getTitle() + " by " + MusicManager.getCurrentSong().getArtist());
 
@@ -244,13 +272,13 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 			mTitle = getString(R.string.title_home);
 			fragmentManager.beginTransaction()
 			.replace(R.id.container, HomeFragment.newInstance())
-			.commit();
+			.commitAllowingStateLoss();
 			break;
 		case 1:
 			mTitle = getString(R.string.title_artists); 
 			fragmentManager.beginTransaction()
 			.replace(R.id.container, ArtistFragment.newInstance())
-			.commit();
+			.commitAllowingStateLoss();
 			break;
 		case 2:
 			if (MusicManager.getCurrentArtist() == null
@@ -261,23 +289,23 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 
 			fragmentManager.beginTransaction()
 			.replace(R.id.container, AlbumFragment.newInstance())
-			.commit();
+			.commitAllowingStateLoss();
 			break;
 		case 3:
 			if (MusicManager.getCurrentAlbum() == null
 			|| isFromDrawer())
 				mTitle = getString(R.string.title_songs);
-			 else
+			else
 				mTitle = MusicManager.getCurrentAlbum().getName();
 			fragmentManager.beginTransaction()
 			.replace(R.id.container, SongFragment.newInstance())
-			.commit();
+			.commitAllowingStateLoss();
 			break;
 		case 4:
 			mTitle = getString(R.string.title_playlist);
 			fragmentManager.beginTransaction()
 			.replace(R.id.container, PlaylistFragment.newInstance())
-			.commit();
+			.commitAllowingStateLoss();
 			break;
 		}
 		getActionBar().setTitle(mTitle);
@@ -325,7 +353,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 				AlertDialog alertDialog = alertDialogBuilder.create();
 				alertDialog.setCanceledOnTouchOutside(true);
 				alertDialog.show();
-				
+
 			} else
 				changeView(fragmentIndex);
 		}
@@ -333,6 +361,8 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 
 	private void savePlaylists() {
 		getManager().open();
+
+		MusicManager.getDbHelper().cleanUp(getManager().getDatabase());
 
 		MusicManager.getDbHelper().createTablesFromPlaylists(getManager().getDatabase());
 
@@ -363,7 +393,6 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 		}
-		MusicManager.getDbHelper().cleanUp(getManager().getDatabase());
 		getManager().close();
 
 	}
@@ -378,6 +407,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		/*
 		if (!mNavigationDrawerFragment.isDrawerOpen()) {
 			// Only show items in the action bar relevant to this screen
 			// if the drawer is not showing. Otherwise, let the drawer
@@ -386,6 +416,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 			restoreActionBar();
 			return true;
 		}
+		*/
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -395,7 +426,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+		if (id == R.id.action_example) {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
