@@ -56,8 +56,10 @@ public class SongDialog extends Dialog {
 				if (!MusicManager.isSongInPlaylist(MusicManager.fetchPlaylist(MusicManager.getPlaylistNames().get(pos)), s)) {
 					MusicManager.fetchPlaylist(MusicManager.getPlaylistNames().get(pos)).getPlaylist().add(s);
 					Toast.makeText(c, "Added to " + MusicManager.getPlaylistNames().get(pos), Toast.LENGTH_SHORT).show();
-					dismiss();
-				}
+				} else
+					Toast.makeText(c, "Song already in list", Toast.LENGTH_SHORT).show();
+				dismiss();
+
 			}
 		});
 	}

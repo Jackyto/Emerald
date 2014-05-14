@@ -1,21 +1,16 @@
 package com.emerald;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
 
 public class MusicService extends Service {
 	private final IBinder 		mBinder = new MyBinder();
 	private MediaPlayer			player;
 	private static boolean		isPlaying = false;
-	private static int 			classID = 2;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -36,6 +31,11 @@ public class MusicService extends Service {
 	}
 
 	public void prev() {
+		MusicManager.getCurrentPlaylist().setIndex(MusicManager.getCurrentPlaylist().getIndex() - 1);
+		if (MusicManager.getCurrentPlaylist().getIndex() < 0)
+			MusicManager.getCurrentPlaylist().setIndex(MusicManager.getCurrentPlaylist().getSize() - 1);
+		MusicManager.setCurrentSong(MusicManager.getCurrentPlaylist().getPlaylist().get(MusicManager.getCurrentPlaylist().getIndex()));
+
 		if (isPlaying) {
 			stop();
 			play();
@@ -46,6 +46,12 @@ public class MusicService extends Service {
 	}
 
 	public void next() {
+		MusicManager.getCurrentPlaylist().setIndex(MusicManager.getCurrentPlaylist().getIndex() + 1);
+		if (MusicManager.getCurrentPlaylist().getIndex() == MusicManager.getCurrentPlaylist().getSize())
+			MusicManager.getCurrentPlaylist().setIndex(0);
+
+		MusicManager.setCurrentSong(MusicManager.getCurrentPlaylist().getPlaylist().get(MusicManager.getCurrentPlaylist().getIndex()));
+
 		if (isPlaying) {
 			stop();
 			play();
@@ -55,32 +61,11 @@ public class MusicService extends Service {
 		}
 	}
 
-	public void showNotif() {
-		Intent intent = new Intent(this, MainActivity.class);
 
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
-				Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-		PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
-		Bitmap b = MusicManager.getAlbumFromSong(MusicManager.getCurrentSong()).getArt();
-		Bitmap.createScaledBitmap(b, 128, 128, false);
-		Notification notification = new NotificationCompat.Builder(getApplicationContext())
-
-		.setContentTitle("Emerald")
-		.setContentText("Now Playing: " + MusicManager.getCurrentSong().getTitle())
-		.setLargeIcon(b)
-		.setSmallIcon(R.drawable.ic_launcher)
-		.setContentIntent(pi)
-		.build();
-		
-		startForeground(classID, notification);
-	}
-	
 	public void play() {
 		if (!isPlaying) {
 			isPlaying = true;
-			showNotif();
-
 			Uri songUri = Uri.parse(MusicManager.getCurrentSong().getPath());
 			player = MediaPlayer.create(this, songUri);
 			player.start();
@@ -102,8 +87,6 @@ public class MusicService extends Service {
 	public void resume() {
 		if (!isPlaying) {
 			isPlaying = true;
-			
-			showNotif();
 			player.start();
 		}
 	}

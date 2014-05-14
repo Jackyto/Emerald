@@ -1,6 +1,5 @@
 package com.emerald;
 
-import com.emerald.dialogs.SearchDialog;
 import com.emerald.dialogs.SongDialog;
 import com.emerald.fragments.AlbumFragment;
 import com.emerald.fragments.ArtistFragment;
@@ -13,12 +12,17 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.SQLException;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
@@ -30,6 +34,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 
 public class MainActivity extends Activity
@@ -48,12 +53,13 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 	private static MusicService	mService;
 
 	private static boolean		fromDrawer = false;
+	private static boolean		fromNotif = false;
 	private static boolean		fullAlbum = false;
 	private static int			fragmentIndex = 0;
 
-	private ImageButton			playButton, nextButton, prevButton, addButton, searchButton;
+	private ImageButton			playButton, nextButton, prevButton, addButton;
 	private TextView			songLabel;
-	private Activity			act;
+	private static Activity			act;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +94,6 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 		nextButton = (ImageButton) findViewById(R.id.nextButton);
 		prevButton = (ImageButton) findViewById(R.id.prevButton);
 		addButton = (ImageButton) findViewById(R.id.addButton);
-		searchButton = (ImageButton) findViewById(R.id.searchButton);
 		songLabel = (TextView) findViewById(R.id.songLabel);
 
 		if (MusicManager.getCurrentSong() != null) 
@@ -138,26 +143,78 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 			}
 
 		});
-		
-		searchButton.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				SearchDialog sd = new SearchDialog(act);
-				sd.show();
+
+	}
+
+	public static void showNotif() {
+		NotificationManager notificationManager = (NotificationManager) 
+				act.getSystemService(NOTIFICATION_SERVICE); 
+
+		Bitmap b = MusicManager.getAlbumFromSong(MusicManager.getCurrentSong()).getArt();
+		Bitmap.createScaledBitmap(b, 128, 128, false);
+
+		NotificationCompat.Builder nb = new NotificationCompat.Builder(act);
+
+		nb.setContentTitle(act.getResources().getString(R.string.app_name));
+		nb.setContentText(MusicManager.getCurrentSong().getTitle());
+		nb.setSmallIcon(R.drawable.ic_launcher);
+		nb.setLargeIcon(b);
+
+		Intent prevRcv = new Intent(act, NotifButtonReceiver.class);
+		prevRcv.setAction("PREV");
+		PendingIntent pendingIntentPrev = PendingIntent.getBroadcast(act, 0, prevRcv, PendingIntent.FLAG_UPDATE_CURRENT); 
+		nb.addAction(android.R.drawable.ic_media_rew, null, pendingIntentPrev);
+
+		Intent playRcv = new Intent(act, NotifButtonReceiver.class);
+		playRcv.setAction("PLAY");
+		PendingIntent pendingIntentPlay = PendingIntent.getBroadcast(act, 0, playRcv, PendingIntent.FLAG_UPDATE_CURRENT);
+		nb.addAction(android.R.drawable.ic_media_play, null, pendingIntentPlay);
+
+		Intent nextRcv = new Intent(act, NotifButtonReceiver.class);
+		nextRcv.setAction("NEXT");
+		PendingIntent pendingIntentNext = PendingIntent.getBroadcast(act, 0, nextRcv, PendingIntent.FLAG_UPDATE_CURRENT);		
+		nb.addAction(android.R.drawable.ic_media_ff, null, pendingIntentNext);
+
+		Notification n = nb.build();
+
+		n.flags = Notification.DEFAULT_LIGHTS | Notification.FLAG_AUTO_CANCEL;
+
+		notificationManager.notify(1, n); 
+
+	}
+	
+	public static void cancelNotification(Context ctx, int notifyId) {
+	    String ns = Context.NOTIFICATION_SERVICE;
+	    NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
+	    nMgr.cancel(1);
+	}
+
+
+	public static class NotifButtonReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getAction() != null ) {
+				setFromNotif(true);
+				if (intent.getAction().equals("PREV")) {
+					mService.prev();
+				}
+				else if (intent.getAction().equals("PLAY")) {
+					if (MusicManager.getCurrentSong() != null) {
+						if (MusicService.isPlaying())
+							mService.pause();
+						else
+							mService.resume();
+					}
+				}
+				else if (intent.getAction().equals("NEXT"))
+					mService.next();
+				showNotif();
+				((MainActivity) act).refreshPlayer();
 			}
-			
-		});
-		
+		}
 	}
 
 	public void next() {
-		MusicManager.getCurrentPlaylist().setIndex(MusicManager.getCurrentPlaylist().getIndex() + 1);
-		if (MusicManager.getCurrentPlaylist().getIndex() == MusicManager.getCurrentPlaylist().getSize())
-			MusicManager.getCurrentPlaylist().setIndex(0);
-
-		MusicManager.setCurrentSong(MusicManager.getCurrentPlaylist().getPlaylist().get(MusicManager.getCurrentPlaylist().getIndex()));
-		
 		mService.next();
 		songLabel.setText(MusicManager.getCurrentSong().getTitle() + " by " + MusicManager.getCurrentSong().getArtist());
 
@@ -169,15 +226,11 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 			playButton.setImageResource(android.R.drawable.ic_media_play);
 
 		mService.getPlayer().setOnCompletionListener(this);
+		showNotif();
+
 	}
 
 	public void prev() {
-		MusicManager.getCurrentPlaylist().setIndex(MusicManager.getCurrentPlaylist().getIndex() - 1);
-		if (MusicManager.getCurrentPlaylist().getIndex() < 0)
-			MusicManager.getCurrentPlaylist().setIndex(MusicManager.getCurrentPlaylist().getSize() - 1);
-
-		MusicManager.setCurrentSong(MusicManager.getCurrentPlaylist().getPlaylist().get(MusicManager.getCurrentPlaylist().getIndex()));
-
 		mService.prev();
 		songLabel.setText(MusicManager.getCurrentSong().getTitle() + " by " + MusicManager.getCurrentSong().getArtist());
 
@@ -189,12 +242,15 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 			playButton.setImageResource(android.R.drawable.ic_media_play);
 
 		mService.getPlayer().setOnCompletionListener(this);
+		showNotif();
+
 	}
 
 	public void resume() {
 		playButton.setImageResource(android.R.drawable.ic_media_pause);
 		mService.resume();
 		mService.getPlayer().setOnCompletionListener(this);
+		showNotif();
 	}
 
 	public void	play() {
@@ -203,12 +259,14 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 
 		mService.play();
 		mService.getPlayer().setOnCompletionListener(this);
+		showNotif();
 	}
 
 	public void pause() {
 		playButton.setImageResource(android.R.drawable.ic_media_play);
 		mService.pause();
 		mService.getPlayer().setOnCompletionListener(this);
+		cancelNotification(act, 1);
 	}
 
 	public void refreshPlayer() {
@@ -266,6 +324,11 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 
 	public void changeView(int position) {
 		fragmentIndex = position;
+		
+		if (isFromNotif()) {
+			fromNotif = false;
+		}
+		
 		FragmentManager fragmentManager = getFragmentManager();
 		switch (position) {
 		case 0 :
@@ -321,7 +384,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
-		if (fragmentIndex == 4)
+		if (fragmentIndex > 4)
 			changeView(0);
 		else {
 			fragmentIndex--;
@@ -346,6 +409,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 						if (mService != null)
 							mService.stop();
 						unbindService(mConnection);
+						cancelNotification(act, 1);
 						finish();
 					}
 				});
@@ -416,7 +480,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 			restoreActionBar();
 			return true;
 		}
-		*/
+		 */
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -470,6 +534,14 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 
 	public static void setFullAlbum(boolean fullAlbum) {
 		MainActivity.fullAlbum = fullAlbum;
+	}
+
+	public static boolean isFromNotif() {
+		return fromNotif;
+	}
+
+	public static void setFromNotif(boolean fromNotif) {
+		MainActivity.fromNotif = fromNotif;
 	}
 
 }

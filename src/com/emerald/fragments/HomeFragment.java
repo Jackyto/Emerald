@@ -4,14 +4,23 @@ import com.emerald.MainActivity;
 import com.emerald.MusicManager;
 import com.emerald.R;
 import com.emerald.Utilities;
+import com.emerald.autocomplete.AutoCompleteSongArrayAdapter;
+import com.emerald.autocomplete.CustomAutoCompleteTextChangedListener;
+import com.emerald.containers.Playlist;
 
+import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -33,6 +42,11 @@ public class HomeFragment extends Fragment implements OnSeekBarChangeListener {
 	private ImageView			iv;
 	private Button				butArtist, butAlbum, butPlaylist, butSong;
 
+	AutoCompleteTextView 		autoComplete;
+	AutoCompleteSongArrayAdapter adapter;
+	Activity					act;
+
+
 	public static HomeFragment newInstance() {
 		HomeFragment fragment = new HomeFragment();
 		return fragment;
@@ -45,6 +59,8 @@ public class HomeFragment extends Fragment implements OnSeekBarChangeListener {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.home_frag, container, false);
+
+		act = getActivity();
 
 		utils = new Utilities();
 
@@ -64,16 +80,14 @@ public class HomeFragment extends Fragment implements OnSeekBarChangeListener {
 		butAlbum = (Button) rootView.findViewById(R.id.albumButton);
 		butPlaylist = (Button) rootView.findViewById(R.id.playlistButton);
 		butSong = (Button) rootView.findViewById(R.id.songsButton);
-		
-		
-		
+
 		butArtist.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				((MainActivity) getActivity()).changeView(1);
 			}
 		});
-		
+
 		butAlbum.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -82,14 +96,14 @@ public class HomeFragment extends Fragment implements OnSeekBarChangeListener {
 				((MainActivity) getActivity()).changeView(2);
 			}
 		});
-		
+
 		butPlaylist.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				((MainActivity) getActivity()).changeView(4);
 			}
 		});
-		
+
 		butSong.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -98,7 +112,7 @@ public class HomeFragment extends Fragment implements OnSeekBarChangeListener {
 				((MainActivity) getActivity()).changeView(3);
 			}
 		});
-		
+
 		if (MusicManager.getCurrentSong() != null) {
 			MainActivity.getManager();
 
@@ -106,13 +120,52 @@ public class HomeFragment extends Fragment implements OnSeekBarChangeListener {
 			idArtist.setText(MusicManager.getCurrentSong().getArtist());
 			idAlbum.setText(MusicManager.getCurrentSong().getAlbum());
 			idDuration.setText(utils.milliSecondsToTimer(MusicManager.getCurrentSong().getDuration()));
-			
+
 			iv.setImageBitmap(MusicManager.getAlbumFromSong(MusicManager.getCurrentSong()).getArt());
 		}
 
 		if (MainActivity.getmService() != null
 				&& MainActivity.getmService().getPlayer() != null) 
 			updateProgressBar();
+
+		autoComplete = (AutoCompleteTextView) rootView.findViewById(R.id.searchView);
+		adapter = new AutoCompleteSongArrayAdapter(act, R.layout.song_row, MusicManager.getSearchList());
+
+		autoComplete.addTextChangedListener(new CustomAutoCompleteTextChangedListener(act, autoComplete, adapter));
+		
+		autoComplete.setAdapter(adapter);
+
+		autoComplete.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> adapter, View arg1, int pos,
+					long arg3) {
+				
+				MusicManager.setCurrentSong(MusicManager.getSearchList().get(pos));
+				MusicManager.setCurrentArtist(MusicManager.getArtistFromSong(MusicManager.getCurrentSong()));
+				MusicManager.setCurrentAlbum(MusicManager.getAlbumFromSong(MusicManager.getCurrentSong()));
+
+				if (MainActivity.isFromDrawer())
+					MusicManager.setCurrentPlaylist(new Playlist(MainActivity.getManager().getSongList(), 0, "current"));
+				else if (MusicManager.getCurrentAlbum() != null)
+					MusicManager.setCurrentPlaylist(new Playlist(MainActivity.getManager().getSongListFromAlbum(MusicManager.getCurrentAlbum()), 0, "current"));
+				else
+					MusicManager.setCurrentPlaylist(new Playlist(MainActivity.getManager().getSongListFromArtist(MusicManager.getCurrentArtist()), 0, "current"));
+
+				MusicManager.getCurrentPlaylist().setIndex(0);
+				MainActivity.setFromDrawer(false);
+
+				((MainActivity) act).play();
+				((MainActivity) act).refreshPlayer();
+
+				InputMethodManager imm = (InputMethodManager) act.getSystemService(
+						Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(autoComplete.getWindowToken(), 0);
+				
+				MusicManager.getSearchList().clear();
+			}
+
+		});
 
 		return rootView;
 	}
@@ -132,7 +185,7 @@ public class HomeFragment extends Fragment implements OnSeekBarChangeListener {
 		}
 
 	}
-	
+
 	public void updateProgressBar() {
 		mHandler.postDelayed(mUpdateTimeTask, 100);
 	}
@@ -177,8 +230,8 @@ public class HomeFragment extends Fragment implements OnSeekBarChangeListener {
 		updateProgressBar();
 	}
 
-	
-	
+
+
 	@Override
 	public void onDestroy() {
 		mHandler.removeCallbacks(mUpdateTimeTask);

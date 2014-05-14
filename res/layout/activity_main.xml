@@ -100,27 +100,6 @@
                 android:src="@android:drawable/ic_menu_add" />
 
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/searchLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="4dp"
-            android:layout_toRightOf="@+id/songButtonsLayout"
-            android:background="#000000"
-            android:orientation="vertical"
-            android:padding="2dp" >
-
-            <ImageButton
-                android:id="@+id/searchButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="#b5b5b5"
-                android:contentDescription="@string/desc_button_search"
-                android:src="@android:drawable/ic_menu_search" />
-
-        </LinearLayout>
     </RelativeLayout>
 
     <RelativeLayout

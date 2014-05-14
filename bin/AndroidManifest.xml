@@ -7,9 +7,9 @@
     <uses-sdk
         android:minSdkVersion="16"
         android:targetSdkVersion="19" />
-    
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -19,17 +19,29 @@
         <activity
             android:name="com.emerald.MainActivity"
             android:label="@string/app_name"
-            android:windowSoftInputMode="adjustResize"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver android:name="com.emerald.MainActivity$NotifButtonReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.PREV" >
+                </action>
+                <action android:name="android.intent.action.PLAY" >
+                </action>
+                <action android:name="android.intent.action.NEXT" >
+                </action>
+            </intent-filter>
+        </receiver>
+
         <service
-            android:enabled="true"
-            android:name=".MusicService"/>   
+            android:name=".MusicService"
+            android:enabled="true" />
     </application>
 
 </manifest>

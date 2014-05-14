@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import android.content.ContentUris;
@@ -41,7 +42,7 @@ public class MusicManager implements Serializable{
 	private static List<Song>				songList;
 
 	private static List<Song>				searchList;
-	
+
 	private static Playlist					currentPlaylist;
 	private static List<Playlist>			userPlaylists;
 	private static List<String>				playlistNames;
@@ -408,11 +409,16 @@ public class MusicManager implements Serializable{
 	}
 
 	public static void generateSearchList(CharSequence userInput) {
-		searchList.clear();
-		for (i = 0; i < songList.size(); i++) {
-			if (Pattern.compile(Pattern.quote(userInput.toString()), Pattern.CASE_INSENSITIVE).matcher(songList.get(i).getTitle()).find())
-				searchList.add(songList.get(i));
-		}
+		ArrayList<Song> tmp = new ArrayList<Song>();
+
+		for (i = 0; i < songList.size(); i++) 
+			if (songList.get(i).getTitle().toLowerCase(Locale.getDefault()).contains(userInput.toString().toLowerCase()))  //  Pattern.compile(Pattern.quote(userInput.toString()), Pattern.CASE_INSENSITIVE).matcher().find())
+				tmp.add(songList.get(i));
+
+
+		if (tmp.size() != searchList.size() && tmp.size() > 0)
+			setSearchList(tmp);
+
 	}
 	public List<Artist> getArtistList() {
 		return artistList;
@@ -517,6 +523,5 @@ public class MusicManager implements Serializable{
 	public static void setSearchList(List<Song> searchList) {
 		MusicManager.searchList = searchList;
 	}
-
 
 }
