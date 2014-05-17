@@ -47,9 +47,9 @@ public class AlbumFragment extends Fragment {
 
 			ListView listView = (ListView) rootView.findViewById(R.id.album_list);
 
-			if (MainActivity.isFromDrawer()) {
+			if (MainActivity.isFromDrawer() || MusicManager.getCurrentArtist() == null) {
 				List<Album> tmp = MainActivity.getManager().getAlbumList();
-				
+
 				Collections.sort(tmp, new Comparator<Album>() {
 					@Override
 					public int compare(final Album object1, final Album object2) {
@@ -59,15 +59,9 @@ public class AlbumFragment extends Fragment {
 				adapter = new AlbumListAdapter(getActivity().getApplicationContext(), R.layout.album_row, tmp);
 				MainActivity.setFromDrawer(false);
 			} else {
-				if (MusicManager.getCurrentArtist() != null) {
-					adapter = new AlbumListAdapter(getActivity().getApplicationContext(),
-							R.layout.album_row,
-							MainActivity.getManager().getAlbumListFromArtist(MusicManager.getCurrentArtist()));
-				}
-				else {
-					((MainActivity) getActivity()).changeView(MainActivity.getFragmentIndex() + 1);
-					return rootView;
-				}
+				adapter = new AlbumListAdapter(getActivity().getApplicationContext(),
+						R.layout.album_row,
+						MainActivity.getManager().getAlbumListFromArtist(MusicManager.getCurrentArtist()));
 			}
 
 			View header = inflater.inflate(R.layout.header_row, null);

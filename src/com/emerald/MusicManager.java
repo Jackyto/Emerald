@@ -15,7 +15,11 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -124,35 +128,51 @@ public class MusicManager implements Serializable{
 	}
 
 	public void savePlaylistNames() {
-		for (i = 0; i < playlistNames.size(); i++) {
-			ContentValues values = new ContentValues();
+		try {
+			for (i = 0; i < playlistNames.size(); i++) {
+				ContentValues values = new ContentValues();
 
-			values.put(PlaylistSQLiteHelper.COLUMN_NAME, playlistNames.get(i));
+				values.put(PlaylistSQLiteHelper.COLUMN_NAME, playlistNames.get(i));
 
-			database.insert(PlaylistSQLiteHelper.TABLE_REF, null, values);
+				database.insert(PlaylistSQLiteHelper.TABLE_REF, null, values);
+			}
+		}  catch (SQLException e) {
+			Log.e("Exception on query", e.toString());
+		}
+	}
+
+	public void refreshCurrents() {
+		if (currentSong != null) {
+			currentAlbum = getAlbumFromSong(currentSong);
+			currentArtist = getArtistFromSong(currentSong);
+		} else if (currentAlbum != null) {
+			currentArtist = getArtistFromAlbum(currentAlbum);
 		}
 	}
 
 	public void createPlaylistInDB(Playlist p) {
-		System.out.println(p.getName());
-		if (p.getPlaylist() != null) {
-			int k;
-			for (k = 0, i = p.getIndex(); k < p.getPlaylist().size(); k++, i++) {
+		try {
+			if (p.getPlaylist() != null) {
+				int k;
+				for (k = 0, i = p.getIndex(); k < p.getPlaylist().size(); k++, i++) {
 
-				ContentValues values = new ContentValues();
+					ContentValues values = new ContentValues();
 
-				values.put(PlaylistSQLiteHelper.COLUMN_TITLE, p.getPlaylist().get(i).getTitle());
-				values.put(PlaylistSQLiteHelper.COLUMN_ARTIST, p.getPlaylist().get(i).getArtist());
-				values.put(PlaylistSQLiteHelper.COLUMN_ALBUM, p.getPlaylist().get(i).getAlbum());
-				values.put(PlaylistSQLiteHelper.COLUMN_PATH, p.getPlaylist().get(i).getPath());
-				values.put(PlaylistSQLiteHelper.COLUMN_DURATION, String.valueOf(p.getPlaylist().get(i).getDuration()));
+					values.put(PlaylistSQLiteHelper.COLUMN_TITLE, p.getPlaylist().get(i).getTitle());
+					values.put(PlaylistSQLiteHelper.COLUMN_ARTIST, p.getPlaylist().get(i).getArtist());
+					values.put(PlaylistSQLiteHelper.COLUMN_ALBUM, p.getPlaylist().get(i).getAlbum());
+					values.put(PlaylistSQLiteHelper.COLUMN_PATH, p.getPlaylist().get(i).getPath());
+					values.put(PlaylistSQLiteHelper.COLUMN_DURATION, String.valueOf(p.getPlaylist().get(i).getDuration()));
 
-				String table = p.getName();
-				database.insert(table, null, values);	
+					String table = p.getName();
+					database.insert(table, null, values);	
 
-				if (i + 1 == p.getPlaylist().size())
-					i = -1;
+					if (i + 1 == p.getPlaylist().size())
+						i = -1;
+				}
 			}
+		}  catch (SQLException e) {
+			Log.e("Exception on query", e.toString());
 		}
 	}
 
@@ -172,7 +192,6 @@ public class MusicManager implements Serializable{
 			}
 
 		}  catch (SQLException e) {
-			System.out.println("PAS GOOD");
 			Log.e("Exception on query", e.toString());
 		}
 		return p;
@@ -199,122 +218,161 @@ public class MusicManager implements Serializable{
 				cursor.getInt(5));
 	}
 
-	private void		retrieveArtists(){		
-		String		selection = MediaStore.Audio.Artists._ID + " != 0";
-		String[]	projection = {
-				"DISTINCT " + MediaStore.Audio.Artists._ID,
-				MediaStore.Audio.Artists.ARTIST_KEY,
-				MediaStore.Audio.Artists.ARTIST,
-				MediaStore.Audio.Artists.NUMBER_OF_ALBUMS
-		};
+	private void		retrieveArtists(){
+		try {
+			String		selection = MediaStore.Audio.Artists._ID + " != 0";
+			String[]	projection = {
+					"DISTINCT " + MediaStore.Audio.Artists._ID,
+					MediaStore.Audio.Artists.ARTIST_KEY,
+					MediaStore.Audio.Artists.ARTIST,
+					MediaStore.Audio.Artists.NUMBER_OF_ALBUMS
+			};
 
-		Cursor 		cursor = context.getContentResolver().query(
-				MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
-				projection, selection, null, MediaStore.Audio.Artists.ARTIST);
+			Cursor 		cursor = context.getContentResolver().query(
+					MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
+					projection, selection, null, MediaStore.Audio.Artists.ARTIST);
 
-		Artist 		tmp = null;
+			Artist 		tmp = null;
 
-		if (cursor.moveToFirst()) {
-			do {
-				tmp = new Artist(cursor.getInt(0),
-						cursor.getString(1),
-						cursor.getString(2), cursor.getInt(3));
+			if (cursor.moveToFirst()) {
+				do {
+					tmp = new Artist(cursor.getInt(0),
+							cursor.getString(1),
+							cursor.getString(2), cursor.getInt(3));
 
-				artistList.add(tmp);
-			} while (cursor.moveToNext());
+					artistList.add(tmp);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
 		}
-		cursor.close();
+		catch (SQLException e) {
+			Log.e("Exception on query artist", e.toString());
+		}		
 	}
 
-	private void		retrieveAlbums(){		
-		String		selection = MediaStore.Audio.Albums._ID + " != 0";
-		String[]	projection = {
-				"DISTINCT " + MediaStore.Audio.Albums._ID,
-				MediaStore.Audio.Albums.ALBUM_KEY,
-				MediaStore.Audio.Albums.ALBUM, 
-				MediaStore.Audio.Albums.ARTIST,
-				MediaStore.Audio.Albums.NUMBER_OF_SONGS
-		};
+	private void		retrieveAlbums(){
+		try {
+			String		selection = MediaStore.Audio.Albums._ID + " != 0";
+			String[]	projection = {
+					"DISTINCT " + MediaStore.Audio.Albums._ID,
+					MediaStore.Audio.Albums.ALBUM_KEY,
+					MediaStore.Audio.Albums.ALBUM, 
+					MediaStore.Audio.Albums.ARTIST,
+					MediaStore.Audio.Albums.NUMBER_OF_SONGS
+			};
 
-		Cursor 		cursor = context.getContentResolver().query(
-				MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-				projection, selection, null, null);
+			Cursor 		cursor = context.getContentResolver().query(
+					MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+					projection, selection, null, null);
 
-		Album 		tmp = null;
+			Album 		tmp = null;
 
-		if (cursor.moveToFirst()) {
-			do {
+			if (cursor.moveToFirst()) {
+				do {
 
-				tmp = new Album(cursor.getInt(0),
-						cursor.getString(1),
-						cursor.getString(2),
-						cursor.getString(3),
-						cursor.getInt(4));
+					tmp = new Album(cursor.getInt(0),
+							cursor.getString(1),
+							cursor.getString(2),
+							cursor.getString(3),
+							cursor.getInt(4));
 
-				Uri sArtworkUri = Uri
-						.parse("content://media/external/audio/albumart");
-				Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, tmp.getId());
+					Uri sArtworkUri = Uri
+							.parse("content://media/external/audio/albumart");
+					Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, tmp.getId());
 
-				Bitmap bitmap = null;
-				try {
-					bitmap = MediaStore.Images.Media.getBitmap(
-							context.getContentResolver(), albumArtUri);
+					Bitmap bitmap = null;
+					try {
+						bitmap = MediaStore.Images.Media.getBitmap(
+								context.getContentResolver(), albumArtUri);
 
-				} catch (FileNotFoundException exception) {
-					exception.printStackTrace();
-					bitmap = BitmapFactory.decodeResource(context.getResources(),
-							R.drawable.ic_launcher);
-				} catch (IOException e) {
-					e.printStackTrace();
-					bitmap = BitmapFactory.decodeResource(context.getResources(),
-							R.drawable.ic_launcher);
-					e.printStackTrace();
-				}
-				tmp.setArt(bitmap);
-
-				albumList.add(tmp);
-			} while (cursor.moveToNext());
+					} catch (FileNotFoundException exception) {
+						exception.printStackTrace();
+						bitmap = BitmapFactory.decodeResource(context.getResources(),
+								R.drawable.ic_launcher);
+					} catch (IOException e) {
+						e.printStackTrace();
+						bitmap = BitmapFactory.decodeResource(context.getResources(),
+								R.drawable.ic_launcher);
+						e.printStackTrace();
+					}
+					tmp.setArt(bitmap);
+					tmp.setBanner(cutMid(bitmap));
+					albumList.add(tmp);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+		}  catch (SQLException e) {
+			Log.e("Exception on query albums", e.toString());
 		}
-		cursor.close();
 	}
 
 	private void		retrieveSongs(){
-		String		selection = MediaStore.Audio.Media._ID + " != 0";
-		String[]	projection = {
-				"DISTINCT " + MediaStore.Audio.Media._ID,
-				MediaStore.Audio.Media.TITLE,
-				MediaStore.Audio.Media.ARTIST, 
-				MediaStore.Audio.Media.ALBUM,
-				MediaStore.Audio.Media.TITLE_KEY,
-				MediaStore.Audio.Media.DATA,
-				MediaStore.Audio.Media.DURATION
-		};
+		try {
+			String		selection = MediaStore.Audio.Media._ID + " != 0";
+			String[]	projection = {
+					"DISTINCT " + MediaStore.Audio.Media._ID,
+					MediaStore.Audio.Media.TITLE,
+					MediaStore.Audio.Media.ARTIST, 
+					MediaStore.Audio.Media.ALBUM,
+					MediaStore.Audio.Media.TITLE_KEY,
+					MediaStore.Audio.Media.DATA,
+					MediaStore.Audio.Media.DURATION
+			};
 
-		Cursor 		cursor = context.getContentResolver().query(
-				MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-				projection, selection, null, MediaStore.Audio.Media.TITLE);
+			Cursor 		cursor = context.getContentResolver().query(
+					MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+					projection, selection, null, MediaStore.Audio.Media.TITLE);
 
-		Song 		tmp = null;
+			Song 		tmp = null;
 
-		if (cursor.moveToFirst()) {
-			do {
+			if (cursor.moveToFirst()) {
+				do {
 
-				tmp = new Song(cursor.getInt(0),
-						cursor.getString(1),
-						cursor.getString(2),
-						cursor.getString(3),
-						cursor.getString(4),
-						cursor.getString(5),
-						cursor.getInt(6));
+					tmp = new Song(cursor.getInt(0),
+							cursor.getString(1),
+							cursor.getString(2),
+							cursor.getString(3),
+							cursor.getString(4),
+							cursor.getString(5),
+							cursor.getInt(6));
 
-				if (!Pattern.compile(Pattern.quote("Notifications"), Pattern.CASE_INSENSITIVE).matcher(tmp.getPath()).find()
-						&& !Pattern.compile(Pattern.quote("Ringtones"), Pattern.CASE_INSENSITIVE).matcher(tmp.getPath()).find()
-						&& !Pattern.compile(Pattern.quote("Sounds"), Pattern.CASE_INSENSITIVE).matcher(tmp.getPath()).find())
-					songList.add(tmp);
+					if (!Pattern.compile(Pattern.quote("Notifications"), Pattern.CASE_INSENSITIVE).matcher(tmp.getPath()).find()
+							&& !Pattern.compile(Pattern.quote("Ringtones"), Pattern.CASE_INSENSITIVE).matcher(tmp.getPath()).find()
+							&& !Pattern.compile(Pattern.quote("Sounds"), Pattern.CASE_INSENSITIVE).matcher(tmp.getPath()).find())
+						songList.add(tmp);
 
-			} while (cursor.moveToNext());
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+		}  catch (SQLException e) {
+			Log.e("Exception on query songs", e.toString());
 		}
-		cursor.close();
+	}
+
+	public static Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
+		int width = bm.getWidth();
+		int height = bm.getHeight();
+		float scaleWidth = ((float) newWidth) / width;
+		float scaleHeight = ((float) newHeight) / height;
+		// CREATE A MATRIX FOR THE MANIPULATION
+		Matrix matrix = new Matrix();
+		// RESIZE THE BIT MAP
+		matrix.postScale(scaleWidth, scaleHeight);
+
+		// "RECREATE" THE NEW BITMAP
+		Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+		return resizedBitmap;
+	}
+
+	private Bitmap cutMid(Bitmap originalBitmap) {
+		Bitmap cutBitmap = Bitmap.createBitmap(originalBitmap.getWidth() / 2,
+				originalBitmap.getHeight() / 2, Config.ARGB_8888);
+		Canvas canvas = new Canvas(cutBitmap);
+		Rect desRect = new Rect(0, 0, originalBitmap.getWidth() / 2, originalBitmap.getHeight() / 2);
+		Rect srcRect = new Rect(originalBitmap.getWidth() / 2, 0, originalBitmap.getWidth(),
+				originalBitmap.getHeight() / 2);
+		canvas.drawBitmap(originalBitmap, srcRect, desRect, null);
+		return cutBitmap; 
 	}
 
 	public int		getSongIndex(Song song) {
@@ -412,7 +470,7 @@ public class MusicManager implements Serializable{
 		ArrayList<Song> tmp = new ArrayList<Song>();
 
 		for (i = 0; i < songList.size(); i++) 
-			if (songList.get(i).getTitle().toLowerCase(Locale.getDefault()).contains(userInput.toString().toLowerCase()))  //  Pattern.compile(Pattern.quote(userInput.toString()), Pattern.CASE_INSENSITIVE).matcher().find())
+			if (songList.get(i).getTitle().toLowerCase(Locale.getDefault()).contains(userInput.toString().toLowerCase())) 
 				tmp.add(songList.get(i));
 
 

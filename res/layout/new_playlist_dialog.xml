@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/RelativeLayout1"
+    android:id="@+id/searchLayout"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/new_playlist_border">
@@ -37,7 +37,6 @@
         android:layout_alignBaseline="@+id/btn_yes"
         android:layout_alignBottom="@+id/btn_yes"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="24dp"
         android:background="@drawable/background_color_inv"
         android:clickable="true"
         android:padding="8dp"
@@ -51,7 +50,6 @@
         android:layout_height="48dp"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/playlistLabel"
-        android:layout_marginLeft="24dp"
         android:background="@drawable/background_color_inv"
         android:clickable="true"
         android:padding="8dp"

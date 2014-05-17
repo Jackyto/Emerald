@@ -9,6 +9,7 @@ public class Album {
 	private String 	artist;
 	private int		nbSong;
 	private Bitmap	art;
+	private Bitmap	banner;
 	
 	public Album(int id, String key, String name, String artist, int nbSong) {
 		super();
@@ -53,6 +54,12 @@ public class Album {
 	}
 	public void setArt(Bitmap art) {
 		this.art = art;
+	}
+	public Bitmap getBanner() {
+		return banner;
+	}
+	public void setBanner(Bitmap banner) {
+		this.banner = banner;
 	}
 	
 }

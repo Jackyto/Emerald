@@ -2,16 +2,22 @@
 <resources>
 
     <string name="app_name">Emerald</string>
+    <string name="app_remote_name">Emerald Remote</string>
     <string name="title_home">Home</string>
     <string name="title_artists">Artists</string>
     <string name="title_albums">Albums</string>
     <string name="title_songs">Songs</string>
     <string name="title_search">Search</string>
+    <string name="title_remote">Remote mode</string>
     <string name="desc_album_art">Album art</string>
     <string name="desc_button_player">Player button</string>
-	<string name="desc_button_add">Add to playlist button</string>
-	<string name="desc_button_search">Search for song</string>
-	<string name="none">N/A</string>
+    <string name="desc_button_add">Add to playlist button</string>
+    <string name="desc_button_search">Search for song</string>
+    <string name="desc_search_img">Search icon</string>
+    <string name="desc_remote_button">Remote button</string>
+    <string name="ok">OK</string>
+    <string name="searchHint">Looking for something ?</string>
+    <string name="none">N/A</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="confirm">Confirm</string>
@@ -25,6 +31,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
+    <string name="IP">Ip address</string>
     <string name="action_settings">Settings</string>
 
 </resources>

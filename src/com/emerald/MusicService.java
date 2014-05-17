@@ -5,12 +5,15 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 
 public class MusicService extends Service {
 	private final IBinder 		mBinder = new MyBinder();
 	private MediaPlayer			player;
 	private static boolean		isPlaying = false;
+	float volume = 0;
+	float speed = 0.05f;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -28,6 +31,56 @@ public class MusicService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// TODO Auto-generated method stub
 		return Service.START_STICKY;
+	}
+	
+    float leftVol = 0f;
+    float rightVol = 0f;
+    Runnable increaseVol;
+	
+    public void downVolume() {
+    	final Handler h = new Handler();
+        increaseVol = new Runnable(){
+            public void run(){
+                player.setVolume(leftVol, rightVol);
+                if (leftVol > 0){
+                    leftVol -= .10f;
+                    rightVol -= .10f;
+                    h.postDelayed(increaseVol, 500);
+                }
+            }
+        };
+        
+        h.post(increaseVol);
+    }
+    
+	public void	upVolume() {
+		final Handler h = new Handler();
+        increaseVol = new Runnable(){
+            public void run(){
+                player.setVolume(leftVol, rightVol);
+                if(leftVol < 1.0f){
+                    leftVol += .10f;
+                    rightVol += .10f;
+                    h.postDelayed(increaseVol, 500);
+                }
+            }
+        };
+        
+        h.post(increaseVol);
+	}
+	
+	public void FadeOut(float deltaTime)
+	{
+	    player.setVolume(volume, volume);
+	    volume -= speed * deltaTime;
+
+	}
+	
+	public void FadeIn(float deltaTime)
+	{
+	    player.setVolume(volume, volume);
+	    volume += speed * deltaTime;
+
 	}
 
 	public void prev() {
@@ -60,8 +113,6 @@ public class MusicService extends Service {
 			player = MediaPlayer.create(this, songUri);
 		}
 	}
-
-
 
 	public void play() {
 		if (!isPlaying) {

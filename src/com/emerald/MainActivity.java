@@ -5,6 +5,7 @@ import com.emerald.fragments.AlbumFragment;
 import com.emerald.fragments.ArtistFragment;
 import com.emerald.fragments.HomeFragment;
 import com.emerald.fragments.PlaylistFragment;
+import com.emerald.fragments.RemoteFragment;
 import com.emerald.fragments.SongFragment;
 
 import android.app.Activity;
@@ -28,6 +29,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -147,46 +149,49 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 	}
 
 	public static void showNotif() {
-		NotificationManager notificationManager = (NotificationManager) 
-				act.getSystemService(NOTIFICATION_SERVICE); 
+		try {
+			NotificationManager notificationManager = (NotificationManager) 
+					act.getSystemService(NOTIFICATION_SERVICE); 
 
-		Bitmap b = MusicManager.getAlbumFromSong(MusicManager.getCurrentSong()).getArt();
-		Bitmap.createScaledBitmap(b, 128, 128, false);
+			Bitmap b = MusicManager.getAlbumFromSong(MusicManager.getCurrentSong()).getArt();
+			Bitmap.createScaledBitmap(b, 128, 128, false);
 
-		NotificationCompat.Builder nb = new NotificationCompat.Builder(act);
+			NotificationCompat.Builder nb = new NotificationCompat.Builder(act);
 
-		nb.setContentTitle(act.getResources().getString(R.string.app_name));
-		nb.setContentText(MusicManager.getCurrentSong().getTitle());
-		nb.setSmallIcon(R.drawable.ic_launcher);
-		nb.setLargeIcon(b);
+			nb.setContentTitle(act.getResources().getString(R.string.app_name));
+			nb.setContentText(MusicManager.getCurrentSong().getTitle());
+			nb.setSmallIcon(R.drawable.ic_launcher);
+			nb.setLargeIcon(b);
 
-		Intent prevRcv = new Intent(act, NotifButtonReceiver.class);
-		prevRcv.setAction("PREV");
-		PendingIntent pendingIntentPrev = PendingIntent.getBroadcast(act, 0, prevRcv, PendingIntent.FLAG_UPDATE_CURRENT); 
-		nb.addAction(android.R.drawable.ic_media_rew, null, pendingIntentPrev);
+			Intent prevRcv = new Intent(act, NotifButtonReceiver.class);
+			prevRcv.setAction("PREV");
+			PendingIntent pendingIntentPrev = PendingIntent.getBroadcast(act, 0, prevRcv, PendingIntent.FLAG_UPDATE_CURRENT); 
+			nb.addAction(android.R.drawable.ic_media_rew, null, pendingIntentPrev);
 
-		Intent playRcv = new Intent(act, NotifButtonReceiver.class);
-		playRcv.setAction("PLAY");
-		PendingIntent pendingIntentPlay = PendingIntent.getBroadcast(act, 0, playRcv, PendingIntent.FLAG_UPDATE_CURRENT);
-		nb.addAction(android.R.drawable.ic_media_play, null, pendingIntentPlay);
+			Intent playRcv = new Intent(act, NotifButtonReceiver.class);
+			playRcv.setAction("PLAY");
+			PendingIntent pendingIntentPlay = PendingIntent.getBroadcast(act, 0, playRcv, PendingIntent.FLAG_UPDATE_CURRENT);
+			nb.addAction(android.R.drawable.ic_media_play, null, pendingIntentPlay);
 
-		Intent nextRcv = new Intent(act, NotifButtonReceiver.class);
-		nextRcv.setAction("NEXT");
-		PendingIntent pendingIntentNext = PendingIntent.getBroadcast(act, 0, nextRcv, PendingIntent.FLAG_UPDATE_CURRENT);		
-		nb.addAction(android.R.drawable.ic_media_ff, null, pendingIntentNext);
+			Intent nextRcv = new Intent(act, NotifButtonReceiver.class);
+			nextRcv.setAction("NEXT");
+			PendingIntent pendingIntentNext = PendingIntent.getBroadcast(act, 0, nextRcv, PendingIntent.FLAG_UPDATE_CURRENT);		
+			nb.addAction(android.R.drawable.ic_media_ff, null, pendingIntentNext);
 
-		Notification n = nb.build();
+			Notification n = nb.build();
 
-		n.flags = Notification.DEFAULT_LIGHTS | Notification.FLAG_AUTO_CANCEL;
+			n.flags = Notification.DEFAULT_LIGHTS | Notification.FLAG_AUTO_CANCEL;
 
-		notificationManager.notify(1, n); 
-
+			notificationManager.notify(1, n); 
+		} catch (Exception e) {
+			Log.e("Notification", e.getMessage());
+		}
 	}
-	
+
 	public static void cancelNotification(Context ctx, int notifyId) {
-	    String ns = Context.NOTIFICATION_SERVICE;
-	    NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
-	    nMgr.cancel(1);
+		String ns = Context.NOTIFICATION_SERVICE;
+		NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
+		nMgr.cancel(1);
 	}
 
 
@@ -324,24 +329,24 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 
 	public void changeView(int position) {
 		fragmentIndex = position;
-		
+
 		if (isFromNotif()) {
 			fromNotif = false;
 		}
-		
+
 		FragmentManager fragmentManager = getFragmentManager();
 		switch (position) {
 		case 0 :
 			mTitle = getString(R.string.title_home);
 			fragmentManager.beginTransaction()
 			.replace(R.id.container, HomeFragment.newInstance())
-			.commitAllowingStateLoss();
+			.commit();
 			break;
 		case 1:
 			mTitle = getString(R.string.title_artists); 
 			fragmentManager.beginTransaction()
 			.replace(R.id.container, ArtistFragment.newInstance())
-			.commitAllowingStateLoss();
+			.commit();
 			break;
 		case 2:
 			if (MusicManager.getCurrentArtist() == null
@@ -352,7 +357,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 
 			fragmentManager.beginTransaction()
 			.replace(R.id.container, AlbumFragment.newInstance())
-			.commitAllowingStateLoss();
+			.commit();
 			break;
 		case 3:
 			if (MusicManager.getCurrentAlbum() == null
@@ -362,13 +367,19 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 				mTitle = MusicManager.getCurrentAlbum().getName();
 			fragmentManager.beginTransaction()
 			.replace(R.id.container, SongFragment.newInstance())
-			.commitAllowingStateLoss();
+			.commit();
 			break;
 		case 4:
 			mTitle = getString(R.string.title_playlist);
 			fragmentManager.beginTransaction()
 			.replace(R.id.container, PlaylistFragment.newInstance())
-			.commitAllowingStateLoss();
+			.commit();
+			break;
+		case 5:
+			mTitle = getString(R.string.title_remote);
+			fragmentManager.beginTransaction()
+			.replace(R.id.container, RemoteFragment.newInstance())
+			.commit();
 			break;
 		}
 		getActionBar().setTitle(mTitle);
@@ -384,7 +395,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
-		if (fragmentIndex > 4)
+		if (fragmentIndex > 3)
 			changeView(0);
 		else {
 			fragmentIndex--;

@@ -21,7 +21,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/addToPlaylistLabel"
-        android:layout_margin="4dp"
         android:background="@drawable/background_color_inv"
         android:text="@string/newPlaylist"
         android:textColor="@drawable/text_selector_inv" />

@@ -4,120 +4,35 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_above="@+id/songLayout"
-    android:layout_centerHorizontal="true" >
+    android:layout_centerHorizontal="true"
+    android:background="@color/very_dark_green"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.emerald.MainActivity$HomeFragment" >
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@color/very_dark_green"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        tools:context="com.emerald.MainActivity$HomeFragment" >
+        android:layout_height="456dp"
+        android:background="@color/very_dark_green" >
 
         <RelativeLayout
-            android:id="@+id/navigation"
+            android:id="@+id/searchLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/seekLayout"
-            android:layout_marginTop="12dp"
             android:background="@color/light_text"
             android:padding="8dp" >
 
-            <Button
-                android:id="@+id/artistButton"
-                android:layout_width="98dp"
-                android:layout_height="48dp"
-                android:layout_margin="2dp"
-                android:background="@drawable/background_color"
-                android:text="@string/title_artists"
-                android:textColor="@drawable/text_selector" />
-
-            <Button
-                android:id="@+id/songsButton"
-                android:layout_width="98dp"
-                android:layout_height="48dp"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_margin="2dp"
-                android:background="@drawable/background_color"
-                android:text="@string/title_songs"
-                android:textColor="@drawable/text_selector" />
-
-            <Button
-                android:id="@+id/playlistButton"
-                android:layout_width="98dp"
-                android:layout_height="48dp"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/songsButton"
-                android:layout_margin="2dp"
-                android:background="@drawable/background_color"
-                android:text="@string/title_playlist"
-                android:textColor="@drawable/text_selector" />
-
-            <Button
-                android:id="@+id/albumButton"
-                android:layout_width="98dp"
-                android:layout_height="48dp"
-                android:layout_alignBaseline="@+id/playlistButton"
-                android:layout_alignBottom="@+id/playlistButton"
-                android:layout_alignParentLeft="true"
-                android:layout_margin="2dp"
-                android:background="@drawable/background_color"
-                android:text="@string/title_albums"
-                android:textColor="@drawable/text_selector" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/seekLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/navigation"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/songLayout"
-            android:layout_marginTop="8dp"
-            android:background="@color/light_text"
-            android:padding="8dp" >
-
-            <TextView
-                android:id="@+id/startTime"
+            <ImageView
+                android:id="@+id/imageView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:text="@string/noTime"
-                android:textColor="@color/very_dark_green" />
-
-            <TextView
-                android:id="@+id/endTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_margin="4dp"
-                android:text="@string/noTime"
-                android:textColor="@color/very_dark_green" />
-
-            <SeekBar
-                android:id="@+id/seekBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@+id/startTime"
-                android:layout_margin="4dp" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/RelativeLayout1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/songLayout"
-            android:layout_alignRight="@+id/songLayout"
-            android:layout_marginBottom="16dp"
-            android:background="@color/light_text"
-            android:padding="8dp" >
+                android:layout_alignRight="@+id/searchView"
+                android:layout_alignTop="@+id/searchView"
+                android:contentDescription="@string/desc_search_img"
+                android:padding="4dp"
+                android:src="@android:drawable/ic_menu_search" />
 
             <AutoCompleteTextView
                 android:id="@+id/searchView"
@@ -126,99 +41,140 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_margin="4dp"
-                android:ems="10"
+                android:layout_margin="2dp"
                 android:completionThreshold="3"
-                android:hint="Looking for something ?"
+                android:ems="10"
+                android:hint="@string/searchHint"
                 android:nextFocusLeft="@id/searchView"
                 android:nextFocusUp="@id/searchView" >
-			</AutoCompleteTextView>
-             
-            
 
-            <ImageView
-                android:id="@+id/imageView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignRight="@+id/searchView"
-                android:layout_alignTop="@+id/searchView"
-                android:padding="4dp"
-                android:src="@android:drawable/ic_menu_search" />
-
+                <requestFocus />
+            </AutoCompleteTextView>
         </RelativeLayout>
-
         <RelativeLayout
             android:id="@+id/songLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/seekLayout"
-            android:layout_below="@+id/RelativeLayout1"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/searchLayout"
+            android:layout_marginTop="15dp"
             android:background="@color/light_text"
             android:padding="8dp" >
 
+            <TextView
+                android:id="@+id/idSongArtist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/idSongLabel"
+                android:layout_margin="4dp"
+                android:layout_toLeftOf="@+id/idAlbumArt"
+                android:ellipsize="end"
+                android:padding="4dp"
+                android:singleLine="true"
+                android:text="@string/none"
+                android:textColor="@color/very_dark_green"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/idSongAlbum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignRight="@+id/idSongArtist"
+                android:layout_below="@+id/idSongArtist"
+                android:layout_margin="4dp"
+                android:ellipsize="end"
+                android:padding="4dp"
+                android:singleLine="true"
+                android:text="@string/none"
+                android:textColor="@color/very_dark_green"
+                android:textSize="16sp" />
+
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/startTime"
+                android:layout_margin="8dp" />
+
+            <TextView
+                android:id="@+id/idSongLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignRight="@+id/idAlbumArt"
+                android:layout_margin="4dp"
+                android:ellipsize="end"
+                android:padding="4dp"
+                android:singleLine="true"
+                android:text="@string/none"
+                android:textColor="@color/very_dark_green"
+                android:textSize="18sp" />
+
             <ImageView
                 android:id="@+id/idAlbumArt"
-                android:layout_width="92dp"
-                android:layout_height="92dp"
-                android:layout_margin="8dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/idSongLabel"
+                android:layout_margin="4dp"
                 android:background="#000000"
                 android:contentDescription="@string/desc_album_art"
                 android:padding="2dp"
                 android:src="@drawable/ic_launcher" />
 
             <TextView
-                android:id="@+id/idSongArtist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/idSongLabel"
-                android:layout_margin="4dp"
-                android:layout_toRightOf="@+id/idAlbumArt"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="@string/none"
-                android:textColor="@color/very_dark_green" />
-
-            <TextView
                 android:id="@+id/idSongDuration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignRight="@+id/idSongArtist"
                 android:layout_below="@+id/idSongAlbum"
                 android:layout_margin="4dp"
-                android:layout_toRightOf="@+id/idAlbumArt"
                 android:ellipsize="end"
+                android:padding="4dp"
                 android:singleLine="true"
                 android:text="@string/none"
                 android:textColor="@color/very_dark_green" />
 
-            <TextView
-                android:id="@+id/idSongAlbum"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/idSongArtist"
+            <View
+                android:id="@+id/view1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/idSongDuration"
                 android:layout_margin="4dp"
-                android:layout_toRightOf="@+id/idAlbumArt"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="@string/none"
-                android:textColor="@color/very_dark_green" />
+                android:background="#000000" />
 
             <TextView
-                android:id="@+id/idSongLabel"
+                android:id="@+id/startTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignRight="@+id/idSongArtist"
-                android:layout_margin="4dp"
-                android:layout_toRightOf="@+id/idAlbumArt"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="@string/none"
-                android:textColor="@color/very_dark_green" />
+                android:layout_alignLeft="@+id/seekBar"
+                android:layout_below="@+id/view1"
+                android:layout_margin="8dp"
+                android:padding="4dp"
+                android:text="@string/noTime"
+                android:textColor="@color/very_dark_green"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/endTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/seekBar"
+                android:layout_alignRight="@+id/seekBar"
+                android:layout_margin="8dp"
+                android:padding="4dp"
+                android:text="@string/noTime"
+                android:textColor="@color/very_dark_green"
+                android:textSize="12sp" />
         </RelativeLayout>
+
     </RelativeLayout>
 
 </ScrollView>
