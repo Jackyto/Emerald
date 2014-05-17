@@ -77,7 +77,7 @@ implements NavigationDrawerFragment.NavigationDrawerCallbacks, OnCompletionListe
 		if (MusicManager.getCurrentPlaylist().getPlaylist().size() > 0) {
 			MusicManager.setCurrentSong(MusicManager.getCurrentPlaylist().getPlaylist().get(0));
 			MusicManager.setCurrentAlbum(MusicManager.getAlbumFromSong(MusicManager.getCurrentSong()));
-			MusicManager.getCurrentPlaylist().setIndex(0);
+			MusicManager.getCurrentPlaylist().setIndex(MusicManager.getSongIndexInAlbum(MusicManager.getCurrentSong()));
 		}
 
 		mNavigationDrawerFragment = (NavigationDrawerFragment)

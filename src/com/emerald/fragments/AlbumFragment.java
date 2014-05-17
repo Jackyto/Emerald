@@ -110,7 +110,7 @@ public class AlbumFragment extends Fragment {
 
 			for (int j = 0; j < albums.size(); j++) {
 				AlbumGroup group = new AlbumGroup(albums.get(j));
-				songs = MainActivity.getManager().getSongListFromAlbum(albums.get(j));
+				songs = MusicManager.getSongListFromAlbum(albums.get(j));
 				for (int i = 0; i < songs.size(); i++) {
 					group.children.add(songs.get(i));
 				}

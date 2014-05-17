@@ -105,14 +105,8 @@ public class HomeFragment extends Fragment implements OnSeekBarChangeListener {
 				MusicManager.setCurrentArtist(MusicManager.getArtistFromSong(MusicManager.getCurrentSong()));
 				MusicManager.setCurrentAlbum(MusicManager.getAlbumFromSong(MusicManager.getCurrentSong()));
 
-				if (MainActivity.isFromDrawer())
-					MusicManager.setCurrentPlaylist(new Playlist(MainActivity.getManager().getSongList(), 0, "current"));
-				else if (MusicManager.getCurrentAlbum() != null)
-					MusicManager.setCurrentPlaylist(new Playlist(MainActivity.getManager().getSongListFromAlbum(MusicManager.getCurrentAlbum()), 0, "current"));
-				else
-					MusicManager.setCurrentPlaylist(new Playlist(MainActivity.getManager().getSongListFromArtist(MusicManager.getCurrentArtist()), 0, "current"));
-
-				MusicManager.getCurrentPlaylist().setIndex(0);
+				MusicManager.setCurrentPlaylist(new Playlist(MainActivity.getManager().getSongListFromArtist(MusicManager.getCurrentArtist()), 0, "current"));
+				MusicManager.getCurrentPlaylist().setIndex(MusicManager.getSongIndexInAlbum(MusicManager.getCurrentSong()));
 				MainActivity.setFromDrawer(false);
 
 				((MainActivity) act).play();

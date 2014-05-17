@@ -154,7 +154,7 @@ public class MusicManager implements Serializable{
 		try {
 			if (p.getPlaylist() != null) {
 				int k;
-				for (k = 0, i = p.getIndex(); k < p.getPlaylist().size(); k++, i++) {
+				for (k = 0, i = p.getIndex(); k < p.getPlaylist().size() && i < p.getPlaylist().size(); k++, i++) {
 
 					ContentValues values = new ContentValues();
 
@@ -375,7 +375,7 @@ public class MusicManager implements Serializable{
 		return cutBitmap; 
 	}
 
-	public int		getSongIndex(Song song) {
+	public static int		getSongIndex(Song song) {
 		for (i = 0; i < currentPlaylist.getSize(); i++)
 			if (currentPlaylist.getPlaylist().get(i).getPath() == song.getPath())
 				return i;
@@ -402,7 +402,7 @@ public class MusicManager implements Serializable{
 		return artistAlbumList;
 	}	
 
-	public List<Song> getSongListFromAlbum(Album album) {
+	public static List<Song> getSongListFromAlbum(Album album) {
 		List<Song>		albumSongList = new ArrayList<Song>();
 
 		for (i = 0; i < songList.size(); i++) 
@@ -478,6 +478,17 @@ public class MusicManager implements Serializable{
 			setSearchList(tmp);
 
 	}
+	
+	public static int		getSongIndexInAlbum(Song s) {
+		List<Song>	tmp = getSongListFromAlbum(getAlbumFromSong(s));
+		
+		for (i = 0; i < tmp.size(); i++)
+			if (tmp.get(i).getTitle().equals(s.getTitle()))
+				return i;
+		
+		return i;
+	}
+	
 	public List<Artist> getArtistList() {
 		return artistList;
 	}

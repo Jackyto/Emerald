@@ -58,7 +58,7 @@ public class SongFragment extends Fragment {
 			if (MusicManager.getCurrentAlbum() != null) {
 				adapter = new SongListAdapter(getActivity().getApplicationContext(),
 						R.layout.song_row,
-						MainActivity.getManager().getSongListFromAlbum(MusicManager.getCurrentAlbum()));
+						MusicManager.getSongListFromAlbum(MusicManager.getCurrentAlbum()));
 			}
 			else {
 				adapter = new SongListAdapter(getActivity().getApplicationContext(),
@@ -78,12 +78,12 @@ public class SongFragment extends Fragment {
 				// TODO Auto-generated method stub
 				if (MainActivity.isFromDrawer())
 					MusicManager.setCurrentPlaylist(new Playlist(MainActivity.getManager().getSongList(), pos, "current"));
-				else if (MusicManager.getCurrentAlbum() != null)
-					MusicManager.setCurrentPlaylist(new Playlist(MainActivity.getManager().getSongListFromAlbum(MusicManager.getCurrentAlbum()), pos, "current"));
-				else
+				else if (MusicManager.getCurrentAlbum() != null) {
+					MusicManager.setCurrentPlaylist(new Playlist(MusicManager.getSongListFromAlbum(MusicManager.getCurrentAlbum()), pos, "current"));
+				} else
 					MusicManager.setCurrentPlaylist(new Playlist(MainActivity.getManager().getSongListFromArtist(MusicManager.getCurrentArtist()), pos, "current"));
 				
-				MusicManager.getCurrentPlaylist().setIndex(pos);
+				MusicManager.getCurrentPlaylist().setIndex(MusicManager.getSongIndex(MusicManager.getCurrentSong()));
 				MainActivity.setFromDrawer(false);
 				MusicManager.setCurrentSong((Song) adapter.getItemAtPosition(pos));
 				((MainActivity) getActivity()).play();
